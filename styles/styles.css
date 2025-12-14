@@ -1,10 +1,9 @@
 :root {
+    --color-bg: #F3EDED;
+    --color-btn: #7F66CC;
     --color-primary: #FFFFFF;
-    --color-primary_green: #BAE249;
-    --color-primary_grey: #899D9D;
-    --color-bg: #FFF;
-    --color-bg_shade: #0B1919;
-    --font-family-title: 'Cormorant';
+    --colot-text: #000000;
+    --font-family-title: 'Times New Roman';
     --font-family-desc: 'Open Sans';
 }
 
@@ -12,4 +11,9 @@ section {
     display: flex;
     gap: 10px;
     justify-content: space-between;
+}
+
+div {
+    display: flex;
+    gap: 10px;
 }

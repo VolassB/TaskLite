@@ -7,20 +7,17 @@
 }
 
 .tasks__title {
-    font-family: 'Cormorant';
-    font-weight: 700;
-    font-size: 48px;
+    font-family: var(--font-family-title);
+    font-weight: 400;
     line-height: 100%;
     max-width: 308px;
     margin-bottom: 16px;
-    font-style: italic;
 }
 
 .form {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    max-width: 350px;
 }
 
 .form__field {
@@ -35,11 +32,38 @@
 }
 
 .form__field:hover {
-    background-color: var(--color-primary_grey);
+    background-color: var(--color-btn);
+    color: var(--color-primary);
 }
 
 .form__field:focus {
-    outline: #83A440 1px solid;
+    outline: var(--color-btn) 1px solid;
     outline-offset: 2px;
     transition: all 0.2s ease-in-out;
+}
+
+.form__btn-submit {
+    font-family: var(--font-family-desc);
+    color: var(--color-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 100%;
+    padding: 11.5px 26px;
+    background-color: var(--color-btn);
+    max-width: 145px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.form__btn-filter {
+    font-family: var(--font-family-desc);
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 100%;
+    padding: 11.5px 26px;
+    background-color: var(--color-primary);
+    max-width: 145px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }

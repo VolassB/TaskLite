@@ -11,7 +11,7 @@
     </head>
     <body>
         <header class="header">
-            <h1>TaskLite</h1>
+            <h2>TaskLite</h2>
             <nav class="header__menu">
                 <ul>
                     <li><a class="header__link focus" href="#">To Do</a></li>
@@ -34,6 +34,7 @@
                             id="task"
                             required
                         />
+                        <button class="form__btn-submit" type="submit">Добавить</button>
                 </div>
                 <div>
                     <label for="findTask"></label>
@@ -44,6 +45,10 @@
                             id="findTask"
                             required
                         />
+                    <button class="form__btn-filter" type="submit">Все</button>
+                    <button class="form__btn-filter" type="submit">Активные</button>
+                    <button class="form__btn-filter" type="submit">Завершённые</button>
+                    <button class="form__btn-filter" type="submit">Сначала старые</button>
                 </div>
             </form>
             </section>
