@@ -16,7 +16,7 @@
 }
 
 .header__link {
-    color: var(--color-primary);
+    color: #000;
     font-family: var(--font-family-desc);
     font-size: 16px;
     font-weight: 400;

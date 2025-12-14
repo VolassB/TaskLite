@@ -1,0 +1,45 @@
+.tasks {
+    padding: 86px calc(50% - 555px) 139px;
+    margin-bottom: 4px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.tasks__title {
+    font-family: 'Cormorant';
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 100%;
+    max-width: 308px;
+    margin-bottom: 16px;
+    font-style: italic;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 350px;
+}
+
+.form__field {
+    background-color: var(--color-primary);
+    padding: 10.5px 16px;
+    border: none;
+    font-family: var(--font-family-desc);
+    font-weight: 400;
+    font-size: 16px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+}
+
+.form__field:hover {
+    background-color: var(--color-primary_grey);
+}
+
+.form__field:focus {
+    outline: #83A440 1px solid;
+    outline-offset: 2px;
+    transition: all 0.2s ease-in-out;
+}

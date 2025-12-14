@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="./styles/styles.css" />
         <link rel="stylesheet" href="./styles/reset.css" />
         <link rel="stylesheet" href="./styles/header.css" />
+        <link rel="stylesheet" href="./styles/tasks.css" />
         <title>TaskLite</title>
     </head>
     <body>
@@ -19,5 +20,33 @@
                 </ul>
             </nav>
         </header>
+
+        <main class="main">
+            <section class="tasks">
+            <h2 class="tasks__title">Задачи</h2>
+            <form class="form">
+                <div>
+                    <label for="task"></label>
+                        <input
+                            class="form__field"
+                            placeholder="Введите задачу"
+                            type="text"
+                            id="task"
+                            required
+                        />
+                </div>
+                <div>
+                    <label for="findTask"></label>
+                        <input
+                            class="form__field"
+                            placeholder="Поиск задач..."
+                            type="text"
+                            id="findTask"
+                            required
+                        />
+                </div>
+            </form>
+            </section>
+        </main>
     </body>
 </html>

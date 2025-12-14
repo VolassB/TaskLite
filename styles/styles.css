@@ -1,0 +1,15 @@
+:root {
+    --color-primary: #FFFFFF;
+    --color-primary_green: #BAE249;
+    --color-primary_grey: #899D9D;
+    --color-bg: #FFF;
+    --color-bg_shade: #0B1919;
+    --font-family-title: 'Cormorant';
+    --font-family-desc: 'Open Sans';
+}
+
+section {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
