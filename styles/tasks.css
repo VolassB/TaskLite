@@ -24,6 +24,7 @@
     background-color: var(--color-primary);
     padding: 10.5px 16px;
     border: none;
+    border-radius: 10px;
     font-family: var(--font-family-desc);
     font-weight: 400;
     font-size: 16px;
@@ -33,6 +34,10 @@
 
 .form__field:hover {
     background-color: var(--color-btn);
+    color: var(--color-primary);
+}
+
+label:hover {
     color: var(--color-primary);
 }
 
@@ -53,6 +58,7 @@
     max-width: 145px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    border-radius: 10px;
 }
 
 .form__btn-filter {
@@ -66,4 +72,5 @@
     max-width: 145px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+    border-radius: 10px;
 }
