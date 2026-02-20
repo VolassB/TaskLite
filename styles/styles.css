@@ -7,6 +7,12 @@
     --font-family-desc: 'Open Sans';
 }
 
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
 section {
     display: flex;
     gap: 10px;

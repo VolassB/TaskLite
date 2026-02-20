@@ -1,12 +1,12 @@
 .header {
+    background-color: whitesmoke;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px calc(50% - 1110px / 2);
+    padding: 2px calc(50% - 1110px / 2);
     position: fixed;
     top: 0;
     width: 100%;
-    background-color: var(--color-bg);
     z-index: 3;
 }
 

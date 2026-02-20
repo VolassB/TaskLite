@@ -1,55 +1,226 @@
-function searchTitle (title) {
-    for (let i = 0; i < task.length; i++) {
-        if (task[i].title === title) {
-            return(task[i].id)
-        }
+const tasks = [];
+const form = document.querySelector(".form");
+const input = document.querySelector("#task");
+const searchInput = document.querySelector("#findTask");
+const taskElem = document.querySelector(".task__elem");
+const filterButtons = document.querySelectorAll(".form__btn-filter");
+const counterTotal = document.querySelector("p:nth-child(1)");
+const counterActive = document.querySelector("p:nth-child(2)");
+const counterDone = document.querySelector("p:nth-child(3)");
+const clearDoneBtn = document.querySelector(".button--clear");
+
+let currentFilter = "Все";  // по умолчанию
+let isSortOldest = false;   // по умолчанию новые сверху
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const title = input.value.trim();
+
+  if (title.length < 3) {
+    input.classList.add("form__field-error");
+    return;
+  }
+
+  input.classList.remove("form__field-error");
+
+  const task = {
+    id: Date.now(),
+    title: title,
+    date: new Date().toLocaleString("ru-RU"),
+    done: false,
+  };
+
+  tasks.push(task);
+  applyFilters();
+  input.value = '';
+});
+
+// Применяем фильтры и рендерим
+function applyFilters() {
+  let filtered = tasks.slice();  // копия массива
+
+  // Поиск
+  const searchText = searchInput.value.trim().toLowerCase();
+  if (searchText) {
+    filtered = filtered.filter(task => task.title.toLowerCase().includes(searchText));
+  }
+
+  // Фильтр по статусу
+  if (currentFilter === "Активные") {
+    filtered = filtered.filter(task => !task.done);
+  } else if (currentFilter === "Завершённые") {
+    filtered = filtered.filter(task => task.done);
+  }
+
+  // Сортировка "Сначала старые"
+  if (isSortOldest) {
+    filtered.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+  } else {
+    filtered.sort((a, b) => parseDate(b.date) - parseDate(a.date));  // новые сверху по умолчанию
+  }
+
+  renderTasks(filtered);
+  updateCounters();
+}
+
+// Парсинг даты "DD.MM.YYYY, HH:MM" в timestamp
+function parseDate(dateStr) {
+  const [datePart, timePart] = dateStr.split(', ');
+  const [day, month, year] = datePart.split('.').map(Number);
+  const [hours, minutes] = timePart.split(':').map(Number);
+  return new Date(year, month - 1, day, hours, minutes).getTime();
+}
+
+// Главная функция рендера (принимает отфильтрованный массив)
+function renderTasks(filteredTasks = tasks) {
+  taskElem.innerHTML = '';
+
+  filteredTasks.forEach(task => {
+    const taskEl = createTaskElement(task);
+    attachEventListeners(taskEl, task);
+    taskElem.appendChild(taskEl);
+  });
+}
+
+// Создание элемента задачи
+function createTaskElement(task) {
+  const taskEl = document.createElement("article");
+  taskEl.classList.add("task");
+  if (task.done) taskEl.classList.add('task--done');
+
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.classList.add('task__checkbox');
+  checkbox.checked = task.done;
+
+  const content = document.createElement("div");
+  content.classList.add("task__content");
+
+  const title = document.createElement("h3");
+  title.classList.add("task__title");
+  title.textContent = task.title;
+
+  const meta = document.createElement("p");
+  meta.classList.add("task__meta");
+  meta.textContent = task.date;
+
+  content.append(title, meta);
+
+  const actions = document.createElement("div");
+  actions.classList.add("task__actions");
+  actions.innerHTML = `
+    <svg class="task__icon" viewBox="0 0 24 24" fill="none" stroke="#6f64a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 20h9"></path>
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+    </svg>
+    <svg class="task__icon" viewBox="0 0 24 24" fill="none" stroke="#cb6e6e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+      <path d="M10 11v6"></path>
+      <path d="M14 11v6"></path>
+      <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"></path>
+    </svg>
+  `;
+
+  taskEl.append(checkbox, content, actions);
+  return taskEl;
+}
+
+// Добавление обработчиков
+function attachEventListeners(taskEl, task) {
+  const checkbox = taskEl.querySelector('.task__checkbox');
+  const title = taskEl.querySelector('.task__title');
+  const actions = taskEl.querySelector('.task__actions');
+  const editIcon = actions.querySelectorAll('.task__icon')[0];
+  const deleteIcon = actions.querySelectorAll('.task__icon')[1];
+
+  checkbox.addEventListener('change', () => {
+    task.done = checkbox.checked;
+    applyFilters();
+  });
+
+  title.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = task.title;
+    input.classList.add('task__edit-input');
+
+    const content = taskEl.querySelector('.task__content');
+    content.replaceChild(input, title);
+    input.focus();
+    input.select();
+
+    input.addEventListener('blur', () => saveEdit(input, task));
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        input.blur();
+      }
+      if (e.key === 'Escape') {
+        applyFilters();
+      }
+    });
+  });
+
+  editIcon.addEventListener('click', () => {
+    title.click();
+  });
+
+  deleteIcon.addEventListener('click', () => {
+    if (confirm('Удалить задачу?')) {
+      const index = tasks.findIndex(t => t.id === task.id);
+      tasks.splice(index, 1);
+      applyFilters();
     }
-
+  });
 }
-function changesStatus (title) {
-    for (let i = 0; i < task.length; i++) {
-        if (task[i].title === title) {
-            task[i].status = 'Завершена';
-            return task[i]
-        }
+
+// Сохранение редактирования
+function saveEdit(input, task) {
+  const newTitle = input.value.trim();
+  if (newTitle.length >= 3) {
+    task.title = newTitle;
+  } else if (newTitle.length > 0) {
+    alert('Название должно быть минимум 3 символа');
+  }
+  applyFilters();
+}
+
+// Обновление счётчиков
+function updateCounters() {
+  const total = tasks.length;
+  const active = tasks.filter(t => !t.done).length;
+  const done = total - active;
+
+  counterTotal.textContent = `Всего: ${total}`;
+  counterActive.textContent = `Активных: ${active}`;
+  counterDone.textContent = `Выполненных: ${done}`;
+}
+
+// Обработчики фильтров
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const text = button.textContent;
+    if (text === "Сначала старые") {
+      isSortOldest = !isSortOldest;
+      button.textContent = isSortOldest ? "Сначала новые" : "Сначала старые";  // toggle
+    } else {
+      currentFilter = text;
     }
-}
+    applyFilters();
+  });
+});
 
-const task = [];
-task.push({id: 1, title: 'Купить молоко', status: 'Активна'});
-task.push({id: 2, title: 'Купить кофе', status: 'Завершена'});
-task.push({id: 3, title: 'Сделать кофе с молоком', status: 'Активна'});
-for (let i = 0; i < task.length; i++) {
-    console.log(task[i].title);
-}
+// Поиск в реальном времени
+searchInput.addEventListener('input', applyFilters);
 
-console.log(searchTitle('Сделать кофе с молоком'));
-console.log(changesStatus('Сделать кофе с молоком'))
+// Очистить выполненные
+clearDoneBtn.addEventListener('click', () => {
+  if (confirm('Очистить все выполненные задачи?')) {
+    tasks = tasks.filter(t => !t.done);
+    applyFilters();
+  }
+});
 
-for (let i = 0; i < task.length; i++) {
-    console.log(task[i].id);
-    console.log(task[i].title);
-}
-
-for (tas of task) {
-    console.log(tas);
-}
-
-let i = 0;
-let score = 0;
-while (i < task.length) {
-    if (task[i].status === 'Активна') {
-        score++;
-    }
-    if (task[i].status === 'Завершена') {
-        score++;
-    }
-    i++;
-}
-console.log(score)
-
-for (let i = 0; i < task.length; i++) {
-    if (task[i].status === 'Активна') {
-        console.log(task[i].title);
-    }
-}
+applyFilters();  // инициализация
