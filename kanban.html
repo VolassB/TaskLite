@@ -1,24 +1,106 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="./styles/reset.css" />
-        <link rel="stylesheet" href="./styles/header.css" />
-        <link rel="stylesheet" href="./styles/tasks.css" />
-        <title>TaskLite</title>
-    </head>
-    <body>
-        <header class="header">
-            <h2>TaskLite</h2>
-            <nav class="header__menu">
-                <ul>
-                    <li><a class="header__link focus" href="index.html">To Do</a></li>
-                    <li><a class="header__link focus" href="kanban.html">Kanban</a></li>
-                    <li><a class="header__link focus" href="habits.html">Привычки</a></li>
-                </ul>
-            </nav>
-        </header>
-    </body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/header.css" />
+    <link rel="stylesheet" href="./styles/kanban.css" />
+    <title>TaskLite</title>
+  </head>
+  <body>
+    <header class="header">
+      <h2>TaskLite</h2>
+      <nav class="header__menu">
+        <ul>
+          <li><a class="header__link focus" href="index.html">To Do</a></li>
+          <li><a class="header__link focus" href="kanban.html">Kanban</a></li>
+          <li><a class="header__link focus" href="habits.html">Привычки</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="main kanban">
+      <h2 class="kanban--title">Доска задач</h2>
+
+      <section class="desk">
+        <div class="toDo column">
+          <div class="column-header">
+            <span class="column-bar">|</span>
+            <h3>To Do</h3>
+            <span class="task-count">1</span>
+          </div>
+
+          <div class="tasks-list">
+            <!-- <article class="task">
+              <p class="task-title">прочитать статью js 123</p>
+              <div class="task-footer">
+                <span class="priority high">Высокий приоритет</span>
+                <span class="task-date">22.02</span>
+              </div>
+            </article> -->
+          </div>
+          <div>
+            <button class="add-task">+ Добавить задачу</button>
+          </div>
+        </div>
+
+        <div class="inProgress column">
+          <div class="column-header">
+            <span class="column-bar">|</span>
+            <h3>In Progress</h3>
+            <span class="task-count">0</span>
+          </div>
+
+          <div class="tasks-list">
+            <!-- <article class="task">
+              <p class="task-title">Пример задачи в процессе</p>
+              <div class="task-footer">
+                <span class="priority medium">Средний приоритет</span>
+                <span class="task-date">23.02</span>
+              </div>
+            </article> -->
+          </div>
+
+          <button class="add-task">+ Добавить задачу</button>
+        </div>
+
+        <div class="done column">
+          <div class="column-header">
+            <span class="column-bar">|</span>
+            <h3>Done</h3>
+            <span class="task-count">2</span>
+          </div>
+
+          <div class="tasks-list">
+            <!-- <article class="task kanban">
+              <h3 class="task__title">Завершенная задача 1</h3>
+              <p class="task__desc">
+                Описание завершенной задачи: выполнено чтение документации.
+              </p>
+              <div class="task__footer">
+                <span class="priority medium">Средний приоритет</span>
+                <span class="task__date">21.02.2026</span>
+              </div> -->
+            <!-- </article> -->
+
+            <!-- <article class="task kanban">
+              <h3 class="task__title">Завершенная задача 2</h3>
+              <p class="task__desc">
+                Описание завершенной задачи: исправлена критическая ошибка.
+              </p>
+              <div class="task__footer">
+                <span class="priority high">Высокий приоритет</span>
+                <span class="task__date">22.02.2026</span>
+              </div>
+            </article> -->
+          </div>
+
+          <button class="add-task">+ Добавить задачу</button>
+        </div>
+      </section>
+    </main>
+    <script src="kanban.js" defer></script>
+  </body>
 </html>

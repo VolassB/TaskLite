@@ -1,8 +1,8 @@
 :root {
-    --color-bg: #F3EDED;
+    --color-bg: linear-gradient(180deg, #B3E5FC 0%, #FFF9E6 100%);
     --color-btn: #7F66CC;
     --color-primary: #FFFFFF;
-    --colot-text: #000000;
+    --color-text: #000000;
     --font-family-title: 'Times New Roman';
     --font-family-desc: 'Open Sans';
 }

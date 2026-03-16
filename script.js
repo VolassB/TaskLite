@@ -1,4 +1,4 @@
-const tasks = [];
+let tasks = [];
 const form = document.querySelector(".form");
 const input = document.querySelector("#task");
 const searchInput = document.querySelector("#findTask");
@@ -11,6 +11,15 @@ const clearDoneBtn = document.querySelector(".button--clear");
 
 let currentFilter = "Все";  // по умолчанию
 let isSortOldest = false;   // по умолчанию новые сверху
+
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -64,12 +73,15 @@ function applyFilters() {
   updateCounters();
 }
 
-// Парсинг даты "DD.MM.YYYY, HH:MM" в timestamp
+// Парсинг даты "DD.MM.YYYY, HH:MM:SS" в timestamp (теперь с секундами)
 function parseDate(dateStr) {
   const [datePart, timePart] = dateStr.split(', ');
   const [day, month, year] = datePart.split('.').map(Number);
-  const [hours, minutes] = timePart.split(':').map(Number);
-  return new Date(year, month - 1, day, hours, minutes).getTime();
+  const timeParts = timePart.split(':').map(Number);
+  const hours = timeParts[0];
+  const minutes = timeParts[1];
+  const seconds = timeParts[2] || 0;
+  return new Date(year, month - 1, day, hours, minutes, seconds).getTime();
 }
 
 // Главная функция рендера (принимает отфильтрованный массив)
@@ -89,17 +101,12 @@ function createTaskElement(task) {
   taskEl.classList.add("task");
   if (task.done) taskEl.classList.add('task--done');
 
-  const checkbox = document.createElement('input');
-  checkbox.type = 'checkbox';
-  checkbox.classList.add('task__checkbox');
-  checkbox.checked = task.done;
-
   const content = document.createElement("div");
   content.classList.add("task__content");
 
   const title = document.createElement("h3");
   title.classList.add("task__title");
-  title.textContent = task.title;
+  title.textContent = escapeHtml(task.title);
 
   const meta = document.createElement("p");
   meta.classList.add("task__meta");
@@ -123,24 +130,26 @@ function createTaskElement(task) {
     </svg>
   `;
 
-  taskEl.append(checkbox, content, actions);
+  taskEl.append(content, actions);
   return taskEl;
 }
 
 // Добавление обработчиков
 function attachEventListeners(taskEl, task) {
-  const checkbox = taskEl.querySelector('.task__checkbox');
   const title = taskEl.querySelector('.task__title');
   const actions = taskEl.querySelector('.task__actions');
   const editIcon = actions.querySelectorAll('.task__icon')[0];
   const deleteIcon = actions.querySelectorAll('.task__icon')[1];
 
-  checkbox.addEventListener('change', () => {
-    task.done = checkbox.checked;
-    applyFilters();
+  taskEl.addEventListener('click', (e) => {
+    if (!e.target.closest('.task__actions') && !e.target.closest('.task__edit-input')) {
+      task.done = !task.done;
+      applyFilters();
+    }
   });
 
-  title.addEventListener('click', () => {
+  title.addEventListener('click', (e) => {
+    e.stopPropagation();
     const input = document.createElement('input');
     input.type = 'text';
     input.value = task.title;
@@ -163,11 +172,13 @@ function attachEventListeners(taskEl, task) {
     });
   });
 
-  editIcon.addEventListener('click', () => {
+  editIcon.addEventListener('click', (e) => {
+    e.stopPropagation();
     title.click();
   });
 
-  deleteIcon.addEventListener('click', () => {
+  deleteIcon.addEventListener('click', (e) => {
+    e.stopPropagation();
     if (confirm('Удалить задачу?')) {
       const index = tasks.findIndex(t => t.id === task.id);
       tasks.splice(index, 1);
@@ -202,7 +213,7 @@ function updateCounters() {
 filterButtons.forEach(button => {
   button.addEventListener('click', () => {
     const text = button.textContent;
-    if (text === "Сначала старые") {
+    if (text === "Сначала старые" || text === "Сначала новые") {
       isSortOldest = !isSortOldest;
       button.textContent = isSortOldest ? "Сначала новые" : "Сначала старые";  // toggle
     } else {
@@ -217,7 +228,7 @@ searchInput.addEventListener('input', applyFilters);
 
 // Очистить выполненные
 clearDoneBtn.addEventListener('click', () => {
-  if (confirm('Очистить все выполненные задачи?')) {
+  if (confirm('Вы действительно хотите удалить выполненные задания?')) {
     tasks = tasks.filter(t => !t.done);
     applyFilters();
   }

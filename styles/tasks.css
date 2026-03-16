@@ -4,6 +4,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background-color: transparent;
 }
 
 .tasks-title {
@@ -209,4 +210,9 @@ label:hover {
     color: #8e8b99;
     border: 1px solid #c8c5cf;
     cursor: not-allowed;
+}
+
+.counter-button {
+    display: flex;
+    justify-content: space-between;
 }
