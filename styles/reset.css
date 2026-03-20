@@ -20,6 +20,7 @@ html, body {
 
 .main{
     background: var(--color-bg);
+    height: 100%;
 }
 
 button {

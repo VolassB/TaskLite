@@ -1,5 +1,6 @@
 const columns = document.querySelectorAll('.column');
 
+// === Массив задач ===
 let board = {
     toDo: [
         {
@@ -53,6 +54,7 @@ Object.keys(board).forEach(key => {
 });
 localStorage.setItem('kanbanBoard', JSON.stringify(board));
 
+// === Убирает символы в пользовательском вводе ===
 function escapeHtml(str) {
     return str
         .replace(/&/g, "&amp;")
@@ -61,7 +63,27 @@ function escapeHtml(str) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+// === Значение приоритетности ===
+function getPriorityValue(priority) {
+    if (!priority || typeof priority !== 'string') return 'medium';
 
+    const val = priority.trim().toLowerCase();
+
+    // Синонимы для высокого приоритета
+    const highSynonyms = ['high', 'высокий', 'высок', 'выс', 'h', '1'];
+    // Синонимы для среднего
+    const mediumSynonyms = ['medium', 'средний', 'сред', 'ср', 'm', '2'];
+    // Синонимы для низкого
+    const lowSynonyms = ['low', 'низкий', 'низ', 'н', 'l', '3'];
+
+    if (highSynonyms.some(word => val.includes(word))) return 'high';
+    if (mediumSynonyms.some(word => val.includes(word))) return 'medium';
+    if (lowSynonyms.some(word => val.includes(word))) return 'low';
+
+    return 'medium'; // дефолт, если ничего не распознано
+}
+
+// === Текст приоритетности ===
 function getPriorityText(priority) {
     switch (priority) {
         case 'high': return 'Высокий приоритет';
@@ -71,12 +93,13 @@ function getPriorityText(priority) {
     }
 }
 
+// === Отрисовка карточки ===
 function createTaskElement(task) {
     const article = document.createElement('article');
     article.classList.add('task', 'kanban');
     article.draggable = true;
 
-    // === Заголовок первым (то, что ты хочешь сверху) ===
+    // === Заголовок ===
     const h3 = document.createElement('h3');
     h3.classList.add('task__title');
     h3.textContent = escapeHtml(task.title);
@@ -90,7 +113,7 @@ function createTaskElement(task) {
         article.appendChild(pDesc);
     }
 
-    // === Футер в самом низу ===
+    // === Футер, приоритет, дата ===
     const divFooter = document.createElement('div');
     divFooter.classList.add('task__footer');
 
@@ -106,7 +129,7 @@ function createTaskElement(task) {
     divFooter.appendChild(spanDate);
     article.appendChild(divFooter);
 
-    // Drag-and-drop остаётся без изменений
+    // Drag-and-drop
     article.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', task.id);
         e.dataTransfer.effectAllowed = 'move';
@@ -115,6 +138,7 @@ function createTaskElement(task) {
     return article;
 }
 
+// === Колонки ===
 function renderBoard() {
     const columnKeys = ['toDo', 'inProgress', 'done'];
 
@@ -144,8 +168,8 @@ addButtons.forEach((btn, index) => {
         }
 
         const desc = prompt('Введите описание (опционально):') || '';
-        let priority = prompt('Введите приоритет (high, medium, low):') || 'medium';
-        if (!['high', 'medium', 'low'].includes(priority)) priority = 'medium';
+        const priorityInput = prompt('Введите приоритет (high / medium / low\nили высокий / средний / низкий):') || '';
+        const priority = getPriorityValue(priorityInput);
 
         const date = new Date().toLocaleDateString('ru-RU');
 
@@ -219,44 +243,5 @@ columns.forEach(column => {
     });
 });
 
+// === Рендер ===
 renderBoard();
-
-// let dragArticle = null;
-// let srcStatus = null;
-
-// function addDragEvents() {
-//     article.draggable = 'true';
-//     article.addEventListener('dragstart', function (e) {
-//         dragArticle = article;
-//         srcStatus = article.closeat('.column').dataset.status;
-//         console.log(article.closeat('.column'));
-//         console.log('srcStatus', srcStatus);
-//         e.dateTransfer.effectAllowed = 'move';
-//     });
-
-//     article.addEventListener('dragend', function (e) {
-//         console.log('dragend');
-//         dragArticle = null;
-//     });
-// };
-
-// columns.forEach(function (column) {
-//     tasksList.addEventListener('dragover', function (e) {
-//         e.preventDefault();
-//         column.classList.add('column--d-n-d');
-//     });
-
-//     tasksList.addEventListener('dragleave', function (e) {
-//         e.preventDefault();
-//         column.classList.remove('column--d-n-d');
-//     });
-
-//     tasksList.addEventListener('drop', function (e) {
-//         e.preventDefault();
-//         column.classList.remove('column--d-n-d');
-//         if(!dragArticle) return;
-
-//         board(srcStatus).splice(index, 1);
-//         console.log(board);
-//     });
-// });
