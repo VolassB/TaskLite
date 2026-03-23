@@ -44,6 +44,32 @@ if (saved) {
     board = JSON.parse(saved);
 }
 
+const AUTO_DELETE_AFTER_DAYS = 21;  // например 21 день
+
+function autoCleanDone() {
+    if (!board.done || board.done.length === 0) return;
+
+    const now = Date.now();
+    const msInDay = 24 * 60 * 60 * 1000;
+
+    board.done = board.done.filter(task => {
+        // Пытаемся распарсить дату. Если не получается — оставляем
+        try {
+            const [day, month, year] = task.date.split('.').map(Number);
+            const taskDate = new Date(year, month - 1, day);
+            const diffDays = (now - taskDate.getTime()) / msInDay;
+            return diffDays <= AUTO_DELETE_AFTER_DAYS;
+        } catch (err) {
+            return true; // если дата кривая — не удаляем
+        }
+    });
+
+    localStorage.setItem('kanbanBoard', JSON.stringify(board));
+}
+
+// Вызываем один раз при загрузке страницы
+autoCleanDone();
+
 // Обеспечиваем ID у всех задач (на случай старых данных)
 Object.keys(board).forEach(key => {
     board[key].forEach((task, index) => {
@@ -94,18 +120,17 @@ function getPriorityText(priority) {
 }
 
 // === Отрисовка карточки ===
-function createTaskElement(task) {
+// 1. Внутри функции createTaskElement добавляем крестик ТОЛЬКО для задач в Done
+function createTaskElement(task, columnKey) {   // ← добавили параметр columnKey
     const article = document.createElement('article');
     article.classList.add('task', 'kanban');
     article.draggable = true;
 
-    // === Заголовок ===
     const h3 = document.createElement('h3');
     h3.classList.add('task__title');
     h3.textContent = escapeHtml(task.title);
     article.appendChild(h3);
 
-    // === Описание только если оно есть ===
     if (task.desc && task.desc.trim() !== '') {
         const pDesc = document.createElement('p');
         pDesc.classList.add('task__desc');
@@ -113,7 +138,6 @@ function createTaskElement(task) {
         article.appendChild(pDesc);
     }
 
-    // === Футер, приоритет, дата ===
     const divFooter = document.createElement('div');
     divFooter.classList.add('task__footer');
 
@@ -127,9 +151,56 @@ function createTaskElement(task) {
 
     divFooter.appendChild(spanPriority);
     divFooter.appendChild(spanDate);
+
+    // ────────────── Добавляем кнопку удаления только в Done ──────────────
+    if (columnKey === 'done') {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '×';
+        deleteBtn.className = 'task-delete-btn';
+        deleteBtn.title = 'Удалить задачу';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (!confirm('Удалить задачу?')) return;
+
+            // Находим карточку
+            const taskElement = deleteBtn.closest('.task');
+
+            // Добавляем класс анимации
+            taskElement.classList.add('removing');
+
+            // Ждём окончания анимации
+            taskElement.addEventListener('transitionend', function handler(e) {
+            // Убеждаемся, что анимация именно opacity/transform завершилась
+            if (e.propertyName === 'opacity' || e.propertyName === 'transform') {
+                // Удаляем из DOM
+                taskElement.remove();
+
+                // Удаляем из данных
+                const idx = board.done.findIndex(t => t.id === task.id);
+                if (idx !== -1) {
+                    board.done.splice(idx, 1);
+                    localStorage.setItem('kanbanBoard', JSON.stringify(board));
+
+                    // Обновляем счётчик
+                    const countSpan = document.querySelector('.done .task-count');
+                    if (countSpan) {
+                        countSpan.textContent = board.done.length;
+                    }
+                }
+
+                // Убираем слушатель, чтобы не висел зря
+                taskElement.removeEventListener('transitionend', handler);
+            }
+        }, { once: true });   // можно и так, но вариант выше надёжнее в старых браузерах
+};
+        divFooter.appendChild(deleteBtn);
+    }
+    // ─────────────────────────────────────────────────────────────────────
+
     article.appendChild(divFooter);
 
-    // Drag-and-drop
     article.addEventListener('dragstart', (e) => {
         e.dataTransfer.setData('text/plain', task.id);
         e.dataTransfer.effectAllowed = 'move';
@@ -148,7 +219,7 @@ function renderBoard() {
         tasksList.innerHTML = '';
 
         board[columnKey].forEach(task => {
-            const taskEl = createTaskElement(task);
+            const taskEl = createTaskElement(task, columnKey);
             tasksList.appendChild(taskEl);
         });
 
