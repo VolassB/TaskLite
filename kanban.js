@@ -120,8 +120,7 @@ function getPriorityText(priority) {
 }
 
 // === Отрисовка карточки ===
-// 1. Внутри функции createTaskElement добавляем крестик ТОЛЬКО для задач в Done
-function createTaskElement(task, columnKey) {   // ← добавили параметр columnKey
+function createTaskElement(task, columnKey) {
     const article = document.createElement('article');
     article.classList.add('task', 'kanban');
     article.draggable = true;
@@ -152,28 +151,23 @@ function createTaskElement(task, columnKey) {   // ← добавили пара
     divFooter.appendChild(spanPriority);
     divFooter.appendChild(spanDate);
 
-    // ────────────── Добавляем кнопку удаления только в Done ──────────────
+    // ────────────── Кнопка удаления только в Done ──────────────
     if (columnKey === 'done') {
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = '×';
         deleteBtn.className = 'task-delete-btn';
-        deleteBtn.title = 'Удалить задачу';
+        deleteBtn.title = 'Удалить задачу навсегда';
+
         deleteBtn.onclick = (e) => {
             e.stopPropagation();
             e.preventDefault();
 
-            if (!confirm('Удалить задачу?')) return;
+            if (!confirm('Удалить задачу навсегда?')) return;
 
-            // Находим карточку
             const taskElement = deleteBtn.closest('.task');
-
-            // Добавляем класс анимации
             taskElement.classList.add('removing');
 
-            // Ждём окончания анимации
-            taskElement.addEventListener('transitionend', function handler(e) {
-            // Убеждаемся, что анимация именно opacity/transform завершилась
-            if (e.propertyName === 'opacity' || e.propertyName === 'transform') {
+            setTimeout(() => {
                 // Удаляем из DOM
                 taskElement.remove();
 
@@ -185,20 +179,14 @@ function createTaskElement(task, columnKey) {   // ← добавили пара
 
                     // Обновляем счётчик
                     const countSpan = document.querySelector('.done .task-count');
-                    if (countSpan) {
-                        countSpan.textContent = board.done.length;
-                    }
+                    if (countSpan) countSpan.textContent = board.done.length;
                 }
+            }, 520); //500ms анимация
+        };
 
-                // Убираем слушатель, чтобы не висел зря
-                taskElement.removeEventListener('transitionend', handler);
-            }
-        }, { once: true });   // можно и так, но вариант выше надёжнее в старых браузерах
-};
         divFooter.appendChild(deleteBtn);
-    }
-    // ─────────────────────────────────────────────────────────────────────
-
+    };
+    
     article.appendChild(divFooter);
 
     article.addEventListener('dragstart', (e) => {

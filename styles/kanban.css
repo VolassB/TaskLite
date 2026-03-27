@@ -20,10 +20,11 @@
     display: flex;
     gap: 24px;
     justify-content: space-between;
+    align-items: flex-start;
 }
 
 .column {
-    flex: 1;
+    flex: 0 1 auto;
     flex-direction: column;
     background: #FFFFFF;
     border-radius: 12px;
