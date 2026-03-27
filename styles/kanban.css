@@ -115,19 +115,26 @@
 .task__title {
     font-size: 14px;
     font-weight: 700;
-    margin-bottom: 4px;
     color: #221c2a;
+    margin-bottom: 4px;
+    line-height: 1.35;
+    word-break: break-word;
+    white-space: normal;
+    hyphens: auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .task__desc {
     font-size: 14px;
     color: #6b7280;
     margin-bottom: 8px;
-
     line-height: 1.4;
     word-break: break-word;
-    white-space: pre-wrap;
     overflow-wrap: break-word;
+    white-space: pre-wrap;
 
     max-height: 80px;
     overflow: hidden;
