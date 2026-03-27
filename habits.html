@@ -1,40 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="./styles/styles.css" />
-        <link rel="stylesheet" href="./styles/reset.css" />
-        <link rel="stylesheet" href="./styles/header.css" />
-        <link rel="stylesheet" href="./styles/habits.css" />
-        <title>TaskLite</title>
-    </head>
-    <body>
-        <header class="header">
-            <h2>TaskLite</h2>
-            <nav class="header__menu">
-                <ul>
-                    <li><a class="header__link focus" href="index.html">To Do</a></li>
-                    <li><a class="header__link focus" href="kanban.html">Kanban</a></li>
-                    <li><a class="header__link focus" href="habits.html">Привычки</a></li>
-                </ul>
-            </nav>
-        </header>
-        <main class="main habits">
-            <h2 class="habits--title">Трекер привычек</h2>
-            <section class="desk">
-                <p>Пока нет привычек. Нажмите добавить, чтобы начать.</p>
-                <button class="add-habits">Добавить привычку</button>
-                <div class="habits-list">
-                    <!-- <article class="habit">
-                        <p class="habit-title">прочитать статью js 123</p>
-                        <div class="habit-footer">
-                            <span class="priority high">Высокий приоритет</span>
-                            <span class="task-date">22.02</span>
-                        </div>
-                    </article> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskLite — Привычки</title>
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/styles.css" />
+    <link rel="stylesheet" href="./styles/header.css" />
+    <link rel="stylesheet" href="./styles/habits.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h2>TaskLite</h2>
+      <nav class="header__menu">
+        <ul>
+          <li><a class="header__link" href="index.html">To Do</a></li>
+          <li><a class="header__link" href="kanban.html">Kanban</a></li>
+          <li><a class="header__link focus" href="habits.html">Привычки</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Шаг 3 + 4. Основной контейнер + заголовок -->
+    <main class="main habits">
+      <h2 class="habits--title">Мои привычки</h2>
+
+      <!-- Блок с существующими привычками (как было раньше) -->
+      <section class="habits-desk">
+        <!-- здесь карточки привычек, которые уже есть -->
+        <!-- ... -->
+      </section>
+
+      <!-- Шаг 1. Контейнер формы -->
+      <section class="habit-form-container">
+        <form class="habit-form" id="new-habit-form">
+          <h3 class="form-title">Новая привычка</h3>
+
+          <div class="form-main-row">
+            <div class="form-field name-field">
+              <input
+                type="text"
+                id="habit-name"
+                placeholder="Название привычки"
+                required
+                minlength="2"
+              />
+            </div>
+
+            <div class="form-field schedule-field">
+              <select id="habit-schedule" required>
+                <option value="daily" selected>Каждый день</option>
+                <option value="weekdays">Будни</option>
+                <option value="custom">Свой график</option>
+              </select>
+            </div>
+
+            <div class="form-field target-field">
+              <input
+                type="number"
+                id="habit-target"
+                min="1"
+                max="365"
+                placeholder="Цель (в днях)"
+                value="21"
+              />
+            </div>
           </div>
-            </section>
-        </main>
-    </body>
+
+          <!-- Блок категорий слева в колонку -->
+          <div class="categories-column">
+            <p class="categories-label">Категория</p>
+
+            <label class="category-item">
+              <input
+                type="radio"
+                name="category"
+                value="health"
+                checked
+                hidden
+              />
+              <span class="color-dot" style="background: #4caf50"></span>
+              <span>Здоровье и тело</span>
+            </label>
+
+            <label class="category-item">
+              <input type="radio" name="category" value="study" hidden />
+              <span class="color-dot" style="background: #9c27b0"></span>
+              <span>Учёба и развитие</span>
+            </label>
+
+            <label class="category-item">
+              <input type="radio" name="category" value="emotion" hidden />
+              <span class="color-dot" style="background: #e91e63"></span>
+              <span>Эмоциональное состояние</span>
+            </label>
+
+            <label class="category-item">
+              <input type="radio" name="category" value="home" hidden />
+              <span class="color-dot" style="background: #ffca28"></span>
+              <span>Дом и быт</span>
+            </label>
+
+            <label class="category-item">
+              <input type="radio" name="category" value="work" hidden />
+              <span class="color-dot" style="background: #2196f3"></span>
+              <span>Работа и финансы</span>
+            </label>
+
+            <label class="category-item">
+              <input type="radio" name="category" value="social" hidden />
+              <span class="color-dot" style="background: #ff7043"></span>
+              <span>Социальные привычки</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save">Сохранить привычку</button>
+            <button type="button" class="btn-cancel">Отмена</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Позже подключим habits.js -->
+    <!-- <script src="habits.js" defer></script> -->
+  </body>
 </html>

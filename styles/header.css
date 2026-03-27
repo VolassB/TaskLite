@@ -23,3 +23,16 @@
     line-height: 150%;
     transition: all 0.3s ease-in-out;
 }
+
+.header__link:focus-visible {
+  outline: 3px solid var(--color-btn);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.header__link[aria-selected="true"] {
+  color: var(--color-btn);
+  font-weight: 600;
+  border-bottom: 3px solid var(--color-btn);
+}
+    

@@ -125,6 +125,10 @@ label:hover {
     text-decoration: underline;
 }
 
+input:placeholder:hover{
+    color: white;
+}
+
 .task__edit-input {
     font-family: var(--font-family-desc);
     font-size: 14px;
