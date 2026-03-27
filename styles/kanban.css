@@ -109,6 +109,7 @@
 .task.kanban {
     display: flex;
     flex-direction: column;
+    gap: 6px;
 }
 
 .task__title {
@@ -122,6 +123,15 @@
     font-size: 14px;
     color: #6b7280;
     margin-bottom: 8px;
+
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    max-height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .task__footer {
