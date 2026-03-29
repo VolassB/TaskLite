@@ -1,128 +1,92 @@
 <!doctype html>
 <html lang="ru">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TaskLite — Привычки</title>
     <link rel="stylesheet" href="./styles/reset.css" />
     <link rel="stylesheet" href="./styles/styles.css" />
     <link rel="stylesheet" href="./styles/header.css" />
     <link rel="stylesheet" href="./styles/habits.css" />
-  </head>
-  <body>
+    <title>TaskLite — Привычки</title>
+</head>
+<body>
     <header class="header">
-      <h2>TaskLite</h2>
-      <nav class="header__menu">
-        <ul>
-          <li><a class="header__link" href="index.html">To Do</a></li>
-          <li><a class="header__link" href="kanban.html">Kanban</a></li>
-          <li><a class="header__link focus" href="habits.html">Привычки</a></li>
-        </ul>
-      </nav>
+        <h2>TaskLite</h2>
+        <nav class="header__menu">
+            <ul>
+                <li><a class="header__link" href="index.html">To Do</a></li>
+                <li><a class="header__link" href="kanban.html">Kanban</a></li>
+                <li><a class="header__link focus" href="habits.html">Привычки</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <!-- Шаг 3 + 4. Основной контейнер + заголовок -->
     <main class="main habits">
-      <h2 class="habits--title">Мои привычки</h2>
+        <h2 class="habits--title">Мои привычки</h2>
 
-      <!-- Блок с существующими привычками (как было раньше) -->
-      <section class="habits-desk">
-        <!-- здесь карточки привычек, которые уже есть -->
-        <!-- ... -->
-      </section>
+        <!-- Список привычек -->
+        <div class="habits-list" id="habitsList">
+            <!-- Карточки привычек будут добавляться сюда через JS -->
+        </div>
 
-      <!-- Шаг 1. Контейнер формы -->
-      <section class="habit-form-container">
-        <form class="habit-form" id="new-habit-form">
-          <h3 class="form-title">Новая привычка</h3>
-
-          <div class="form-main-row">
-            <div class="form-field name-field">
-              <input
-                type="text"
-                id="habit-name"
-                placeholder="Название привычки"
-                required
-                minlength="2"
-              />
+        <!-- Форма добавления новой привычки -->
+        <div class="habit-form">
+            <h3>Добавить новую привычку</h3>
+            
+            <div class="form-row">
+                <input 
+                    type="text" 
+                    class="habit-input" 
+                    id="habitName" 
+                    placeholder="Название привычки" 
+                />
             </div>
 
-            <div class="form-field schedule-field">
-              <select id="habit-schedule" required>
-                <option value="daily" selected>Каждый день</option>
-                <option value="weekdays">Будни</option>
-                <option value="custom">Свой график</option>
-              </select>
+            <div class="form-row">
+                <select class="habit-select" id="habitCategory">
+                    <option value="">Выберите категорию</option>
+                    <option value="Здоровье">Здоровье</option>
+                    <option value="Спорт">Спорт</option>
+                    <option value="Обучение">Обучение</option>
+                    <option value="Продуктивность">Продуктивность</option>
+                    <option value="Отдых">Отдых</option>
+                </select>
             </div>
 
-            <div class="form-field target-field">
-              <input
-                type="number"
-                id="habit-target"
-                min="1"
-                max="365"
-                placeholder="Цель (в днях)"
-                value="21"
-              />
+            <!-- Блок выбора цвета -->
+            <div class="color-options" id="colorOptions">
+                <div class="color-row" data-color="#ef4444">
+                    <div class="color-tag color-red"></div>
+                    <span>Красный</span>
+                </div>
+                <div class="color-row" data-color="#f59e0b">
+                    <div class="color-tag color-orange"></div>
+                    <span>Оранжевый</span>
+                </div>
+                <div class="color-row" data-color="#10b981">
+                    <div class="color-tag color-green"></div>
+                    <span>Зелёный</span>
+                </div>
+                <div class="color-row" data-color="#3b82f6">
+                    <div class="color-tag color-blue"></div>
+                    <span>Синий</span>
+                </div>
+                <div class="color-row" data-color="#8b5cf6">
+                    <div class="color-tag color-purple"></div>
+                    <span>Фиолетовый</span>
+                </div>
+                <div class="color-row" data-color="#ec4899">
+                    <div class="color-tag color-pink"></div>
+                    <span>Розовый</span>
+                </div>
             </div>
-          </div>
 
-          <!-- Блок категорий слева в колонку -->
-          <div class="categories-column">
-            <p class="categories-label">Категория</p>
-
-            <label class="category-item">
-              <input
-                type="radio"
-                name="category"
-                value="health"
-                checked
-                hidden
-              />
-              <span class="color-dot" style="background: #4caf50"></span>
-              <span>Здоровье и тело</span>
-            </label>
-
-            <label class="category-item">
-              <input type="radio" name="category" value="study" hidden />
-              <span class="color-dot" style="background: #9c27b0"></span>
-              <span>Учёба и развитие</span>
-            </label>
-
-            <label class="category-item">
-              <input type="radio" name="category" value="emotion" hidden />
-              <span class="color-dot" style="background: #e91e63"></span>
-              <span>Эмоциональное состояние</span>
-            </label>
-
-            <label class="category-item">
-              <input type="radio" name="category" value="home" hidden />
-              <span class="color-dot" style="background: #ffca28"></span>
-              <span>Дом и быт</span>
-            </label>
-
-            <label class="category-item">
-              <input type="radio" name="category" value="work" hidden />
-              <span class="color-dot" style="background: #2196f3"></span>
-              <span>Работа и финансы</span>
-            </label>
-
-            <label class="category-item">
-              <input type="radio" name="category" value="social" hidden />
-              <span class="color-dot" style="background: #ff7043"></span>
-              <span>Социальные привычки</span>
-            </label>
-          </div>
-
-          <div class="form-actions">
-            <button type="submit" class="btn-save">Сохранить привычку</button>
-            <button type="button" class="btn-cancel">Отмена</button>
-          </div>
-        </form>
-      </section>
+            <button class="form__btn-submit" id="addHabitBtn">
+                Добавить привычку
+            </button>
+        </div>
     </main>
 
-    <!-- Позже подключим habits.js -->
-    <!-- <script src="habits.js" defer></script> -->
-  </body>
+    <script src="habits.js" defer></script>
+</body>
 </html>
