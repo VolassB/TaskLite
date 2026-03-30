@@ -92,17 +92,17 @@ function renderHabits() {
         const card = document.createElement('div');
         card.className = 'habit-card';
 
-        // Создаём трекер дней (7 кнопок)
+        // Создаём трекер дней
         let trackerHTML = '<div class="habit-tracker">';
-
+        
         for (let i = 0; i < 7; i++) {
             const isCompleted = habit.completedDays && habit.completedDays.includes(i);
-
+            
             trackerHTML += `
-                <div class="habit-day ${isCompleted ? 'completed' : ''}"
-                    data-habit-index="${habitIndex}"
-                    data-day="${i}">
-                        ${dayLabels[i]}
+                <div class="habit-day ${isCompleted ? 'completed' : ''}" 
+                     data-habit-index="${habitIndex}" 
+                     data-day="${i}">
+                    ${dayLabels[i]}
                 </div>
             `;
         }
@@ -119,16 +119,16 @@ function renderHabits() {
                         <span class="habit-category">${getCategoryName(habit.color)}</span>
                     </div>
                 </div>
-                <button class="habit-delete" data-index="${index}">×</button>
+                <button class="habit-delete" data-habit-index="${habitIndex}">×</button>
             </div>
-
+            
             ${trackerHTML}
         `;
 
         habitsList.appendChild(card);
     });
 
-    // === Обработчики клика по дням ===
+    // === Обработчики клика по дням трекера ===
     document.querySelectorAll('.habit-day').forEach(dayEl => {
         dayEl.addEventListener('click', () => {
             const habitIndex = parseInt(dayEl.dataset.habitIndex);
@@ -136,28 +136,26 @@ function renderHabits() {
 
             const habit = habits[habitIndex];
             
-            // Инициализируем массив, если его ещё нет
             if (!habit.completedDays) habit.completedDays = [];
 
             if (habit.completedDays.includes(dayIndex)) {
-                // Убираем отметку
                 habit.completedDays = habit.completedDays.filter(d => d !== dayIndex);
             } else {
-                // Добавляем отметку
                 habit.completedDays.push(dayIndex);
             }
 
             saveHabits(habits);
-            renderHabits(); // перерисовываем
+            renderHabits(); // перерисовываем всё
         });
     });
 
-    // Добавляем обработчики удаления
+    // === Обработчики удаления привычки ===
     document.querySelectorAll('.habit-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const index = parseInt(e.target.dataset.index);
+            const habitIndex = parseInt(e.target.dataset.habitIndex);
+            
             if (confirm('Удалить привычку?')) {
-                habits.splice(index, 1);
+                habits.splice(habitIndex, 1);
                 saveHabits(habits);
                 renderHabits();
             }
