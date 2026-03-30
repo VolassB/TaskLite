@@ -91,6 +91,18 @@ function renderHabits() {
     habits.forEach((habit, index) => {
         const card = document.createElement('div');
         card.className = 'habit-card';
+
+        // Создаём трекер дней (7 кнопок)
+        let trackerHTML = '<div class="habit-tracker">';
+        for (let i = 0; i < 7; i++) {
+            trackerHTML += `
+                <div class="habit-day" data-day="${i}">
+                    ${dayLabels[i]}
+                </div>
+            `;
+        }
+        trackerHTML += '</div>';
+
         card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-info">
@@ -104,6 +116,8 @@ function renderHabits() {
                 </div>
                 <button class="habit-delete" data-index="${index}">×</button>
             </div>
+
+            ${trackerHTML}
         `;
 
         habitsList.appendChild(card);
