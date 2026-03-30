@@ -1,9 +1,10 @@
 /* ====================== ОБЩИЕ СТИЛИ СТРАНИЦЫ ====================== */
 .main.habits {
-    padding: 86px calc(50% - 555px) 139px;
-    min-height: calc(100vh - 80px);
+    padding: 86px calc(50% - 555px) 80px;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 32px;
     background-color: transparent;
 }
@@ -14,6 +15,14 @@
     font-size: 24px;
     line-height: 100%;
     margin-bottom: 8px;
+    align-self: flex-start;
+}
+
+.habits-empty {
+    text-align: center;
+    color: #6b7280;
+    font-size: 15px;
+    margin: 20px 0 40px 0;
 }
 
 /* ====================== СПИСОК ПРИВЫЧЕК ====================== */
@@ -147,20 +156,25 @@
 /* ====================== ФОРМА ДОБАВЛЕНИЯ ПРИВЫЧКИ ====================== */
 
 .habit-form {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     border-radius: 16px;
-    padding: 24px;
+    padding: 28px 32px;
+    width: 100%;
+    max-width: 580px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.01);
     display: flex;
     flex-direction: column;
     gap: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-
-    width: 100%;
-    max-width: 620px;
     align-self: center;
     margin-top: 20px;
+    animation: fadeInForm 0.3s ease forwards;
+}
+
+@keyframes fadeInForm {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .habit-form h3 {
@@ -234,11 +248,11 @@
 
 .add-habit-btn {
     align-self: center;
-    padding: 14px 28px;
+    padding: 14px 32px;
     background: #7F66CC;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
