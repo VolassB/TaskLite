@@ -23,15 +23,24 @@
 
     <main class="main habits">
         <h2 class="habits--title">Трекер привычек</h2>
+        
+        <p class="habits-empty" id="emptyState">
+            Пока нет привычек. Нажми «Добавить привычку», чтобы начать.
+        </p>
 
         <!-- Список привычек -->
         <div class="habits-list" id="habitsList">
-            <!-- Карточки привычек будут добавляться сюда через JS -->
+            <!-- Карточки привычек будут добавляться через JS -->
         </div>
 
-        <!-- Форма добавления новой привычки -->
-        <div class="habit-form">
-            <h3>Добавить новую привычку</h3>
+        <!-- Кнопка добавления привычки (вне формы) -->
+        <button class="add-habit-btn" id="addHabitBtn">
+            Добавить привычку
+        </button>
+
+        <!-- Форма добавления привычки (скрыта по умолчанию) -->
+        <div class="habit-form" id="habitForm" style="display: none;">
+            <h3>Новая привычка</h3>
             
             <div class="form-row">
                 <input 
@@ -40,50 +49,37 @@
                     id="habitName" 
                     placeholder="Название привычки" 
                 />
-            </div>
-
-            <div class="form-row">
-                <select class="habit-select" id="habitCategory">
-                    <option value="">Выберите категорию</option>
-                    <option value="Здоровье">Здоровье</option>
-                    <option value="Спорт">Спорт</option>
-                    <option value="Обучение">Обучение</option>
-                    <option value="Продуктивность">Продуктивность</option>
-                    <option value="Отдых">Отдых</option>
+                <select class="habit-select" id="habitFrequency">
+                    <option value="everyday">Каждый день</option>
+                    <option value="weekdays">Будни</option>
+                    <option value="custom">Свой график</option>
                 </select>
+                <input 
+                    type="number" 
+                    class="habit-input" 
+                    id="habitGoal" 
+                    placeholder="Цель (в днях)" 
+                    min="1"
+                />
             </div>
 
-            <!-- Блок выбора цвета -->
+            <!-- Выбор категории (цвет + название) -->
             <div class="color-options" id="colorOptions">
-                <div class="color-row" data-color="#ef4444">
-                    <div class="color-tag color-red"></div>
-                    <span>Красный</span>
-                </div>
-                <div class="color-row" data-color="#f59e0b">
-                    <div class="color-tag color-orange"></div>
-                    <span>Оранжевый</span>
-                </div>
-                <div class="color-row" data-color="#10b981">
-                    <div class="color-tag color-green"></div>
-                    <span>Зелёный</span>
-                </div>
-                <div class="color-row" data-color="#3b82f6">
-                    <div class="color-tag color-blue"></div>
-                    <span>Синий</span>
-                </div>
-                <div class="color-row" data-color="#8b5cf6">
-                    <div class="color-tag color-purple"></div>
-                    <span>Фиолетовый</span>
-                </div>
-                <div class="color-row" data-color="#ec4899">
-                    <div class="color-tag color-pink"></div>
-                    <span>Розовый</span>
+                <!-- Заполняется через JS -->
+            </div>
+
+            <!-- Блок кастомных дней (пока скрыт) -->
+            <div class="custom-days" id="customDaysBlock" style="display: none;">
+                <h4>Выберите дни</h4>
+                <div class="days-list" id="daysList">
+                    <!-- Кнопки дней недели будут добавлены через JS -->
                 </div>
             </div>
 
-            <button class="form__btn-submit" id="addHabitBtn">
-                Добавить привычку
-            </button>
+            <div class="form-actions">
+                <button class="btn-save" id="saveHabitBtn">Сохранить привычку</button>
+                <button class="btn-cancel" id="cancelHabitBtn">Отмена</button>
+            </div>
         </div>
     </main>
 
