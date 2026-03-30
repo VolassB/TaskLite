@@ -1,6 +1,7 @@
 /* ====================== ОБЩИЕ СТИЛИ СТРАНИЦЫ ====================== */
 .main.habits {
     padding: 86px calc(50% - 555px) 139px;
+    min-height: calc(100vh - 80px);
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -155,6 +156,11 @@
     flex-direction: column;
     gap: 20px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+    width: 100%;
+    max-width: 620px;
+    align-self: center;
+    margin-top: 20px;
 }
 
 .habit-form h3 {
@@ -166,13 +172,14 @@
 
 .form-row {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
 }
 
 .habit-input,
 .habit-select {
     flex: 1;
+    min-width: 0;
     padding: 12px 16px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -226,8 +233,8 @@
 /* ====================== ВНЕШНЯЯ КНОПКА ====================== */
 
 .add-habit-btn {
-    align-self: flex-start;
-    padding: 12px 24px;
+    align-self: center;
+    padding: 14px 28px;
     background: #7F66CC;
     color: white;
     border: none;
@@ -236,6 +243,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    margin-top: 20px;
 }
 
 .add-habit-btn:hover {
