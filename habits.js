@@ -35,7 +35,22 @@ function saveHabits(habits) {
 }
 
 // Инициализация массива привычек
-let habits = loadHabits().map(normalizeHabit);
+let habits = loadHabits().map(habit => {
+    const normalized = normalizeHabit(habit);
+    
+    // === ОТЛАДКА ===
+    console.group(`%cПривычка: ${normalized.name}`, 'color: #7F66CC; font-weight: bold');
+    console.log('Исходная привычка:', habit);
+    console.log('Нормализованная версия:', normalized);
+    console.log('Серия (streak):', calculateStreak(normalized));
+    console.log('Макс. цель:', getMaxGoal(normalized));
+    console.log('Запланировано дней в неделю:', getPlannedDaysPerWeek(normalized));
+    console.groupEnd();
+
+    return normalized;
+});
+
+console.log('%cВсе привычки после нормализации:', habits);
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================
 function init() {
@@ -90,21 +105,26 @@ function renderHabits() {
         const card = document.createElement('div');
         card.className = 'habit-card';
 
-        // Создаём трекер дней
         let trackerHTML = '<div class="habit-tracker">';
         
         for (let i = 0; i < 7; i++) {
-            const isCompleted = habit.completedDays && habit.completedDays.includes(i);
-            
+            const dayOfWeek = i; // 0 = Пн, 6 = Вс
+            // Берём статус из completions[день в 3-недельном периоде]
+            // Для простоты сейчас используем последние 7 дней (индексы 14–20)
+            const completionIndex = 14 + i; // последние 7 дней
+            const isCompleted = habit.completions[completionIndex] === true;
+
             trackerHTML += `
                 <div class="habit-day ${isCompleted ? 'completed' : ''}" 
                      data-habit-index="${habitIndex}" 
-                     data-day="${i}">
+                     data-completion-index="${completionIndex}">
                     ${dayLabels[i]}
                 </div>
             `;
         }
         trackerHTML += '</div>';
+
+        const streak = calculateStreak(habit);
 
         card.innerHTML = `
             <div class="habit-header">
@@ -115,6 +135,7 @@ function renderHabits() {
                     </div>
                     <div class="habit-meta">
                         <span class="habit-category">${getCategoryName(habit.color)}</span>
+                        ${streak > 0 ? `<span style="color:#10b981; font-weight:600;">🔥 ${streak} дней</span>` : ''}
                     </div>
                 </div>
                 <button class="habit-delete" data-habit-index="${habitIndex}">×</button>
@@ -126,32 +147,26 @@ function renderHabits() {
         habitsList.appendChild(card);
     });
 
-    // === Обработчики клика по дням трекера ===
+    // Клик по дню трекера
     document.querySelectorAll('.habit-day').forEach(dayEl => {
         dayEl.addEventListener('click', () => {
             const habitIndex = parseInt(dayEl.dataset.habitIndex);
-            const dayIndex = parseInt(dayEl.dataset.day);
+            const completionIndex = parseInt(dayEl.dataset.completionIndex);
 
             const habit = habits[habitIndex];
             
-            if (!habit.completedDays) habit.completedDays = [];
-
-            if (habit.completedDays.includes(dayIndex)) {
-                habit.completedDays = habit.completedDays.filter(d => d !== dayIndex);
-            } else {
-                habit.completedDays.push(dayIndex);
-            }
+            // Переключаем выполнение
+            habit.completions[completionIndex] = !habit.completions[completionIndex];
 
             saveHabits(habits);
-            renderHabits(); // перерисовываем всё
+            renderHabits();
         });
     });
 
-    // === Обработчики удаления привычки ===
+    // Удаление привычки
     document.querySelectorAll('.habit-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const habitIndex = parseInt(e.target.dataset.habitIndex);
-            
             if (confirm('Удалить привычку?')) {
                 habits.splice(habitIndex, 1);
                 saveHabits(habits);
