@@ -222,15 +222,33 @@ function setupEventListeners() {
     addHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'block';
         addHabitBtn.style.display = 'none';
-        habitForm.reset();
-        customDaysBlock.classList.add('hidden');
+        
+        // Ручная очистка формы
+        habitNameInput.value = '';
+        habitFrequencySelect.value = 'everyday';
+        habitGoalInput.value = '';
+
+        // Сброс выбранного цвета
         document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
+
+        // Скрываем блок кастомных дней
+        customDaysBlock.classList.add('hidden');
+
+        // Фокус на поле названия
+        habitNameInput.focus();
     });
 
     // Отмена
     cancelHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'none';
         addHabitBtn.style.display = 'block';
+
+        // Очистка формы при отмене
+        habitNameInput.value = '';
+        habitFrequencySelect.value = 'everyday';
+        habitGoalInput.value = '';
+        document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
+        customDaysBlock.classList.add('hidden');
     });
 
     // Сохранение привычки
