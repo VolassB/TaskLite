@@ -102,6 +102,11 @@ function renderHabits() {
     emptyState.style.display = 'none';
 
     habits.forEach((habit, habitIndex) => {
+        // Защита: если completions нет — создаём его на лету
+        if (!habit.completions || habit.completions.length !== 21) {
+            habit.completions = Array(21).fill(false);
+        }
+
         const card = document.createElement('div');
         card.className = 'habit-card';
 
@@ -367,6 +372,7 @@ function calculateStreak(habit) {
 // ====================== НОРМАЛИЗАЦИЯ ПРИВЫЧКИ ======================
 
 // нормализация
+// ====================== НОРМАЛИЗАЦИЯ ПРИВЫЧКИ ======================
 function normalizeHabit(habit) {
     let normalized = { ...habit };
 
@@ -375,7 +381,7 @@ function normalizeHabit(habit) {
         normalized.activeDays = [];
     }
 
-    // Гарантируем completions (ровно 21 день)
+    // Гарантируем completions — НО НЕ СБРАСЫВАЕМ, если уже есть корректный массив
     if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
         normalized.completions = Array(21).fill(false);
     }
