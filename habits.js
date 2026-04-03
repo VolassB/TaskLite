@@ -370,23 +370,22 @@ function calculateStreak(habit) {
 }
 
 // ====================== НОРМАЛИЗАЦИЯ ПРИВЫЧКИ ======================
-
-// нормализация
-// ====================== НОРМАЛИЗАЦИЯ ПРИВЫЧКИ ======================
 function normalizeHabit(habit) {
     let normalized = { ...habit };
 
-    // Гарантируем activeDays
+    // Шаг 2: activeDays
     if (!Array.isArray(normalized.activeDays)) {
         normalized.activeDays = [];
     }
 
-    // Гарантируем completions — НО НЕ СБРАСЫВАЕМ, если уже есть корректный массив
+    // Шаг 3: completions — ИСПРАВЛЕНИЕ
+    // Не пересоздаём массив, если он уже есть и имеет правильную длину!
     if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
         normalized.completions = Array(21).fill(false);
     }
+    // ← Если массив уже есть и длиной 21 — оставляем как есть!
 
-    // Ограничиваем goal
+    // Шаг 4: goal
     const maxGoal = getMaxGoal(normalized);
     normalized.goal = Math.max(0, Math.min(maxGoal, Number(normalized.goal) || 0));
 
