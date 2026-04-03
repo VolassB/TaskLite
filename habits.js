@@ -35,7 +35,7 @@ function saveHabits(habits) {
 }
 
 // Инициализация массива привычек
-let habits = loadHabits().map(habit => normalizeHabit(habit));;
+let habits = loadHabits().map(normalizeHabit);
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================
 function init() {
@@ -387,6 +387,88 @@ function normalizeHabit(habit) {
     // Шаг 4. Ограничиваем goal
     const maxGoal = getMaxGoal(normalized);
     normalized.goal = Math.max(0, Math.min(maxGoal, Number(normalized.goal) || 0));
+
+    return normalized;
+}
+
+// ====================== ПРОДВИНУТАЯ ЧАСТЬ — НОРМАЛИЗАЦИЯ И СЕРИЯ ======================
+
+// Шаг 1. Функция определения активности дня
+function isDayActive(habit, dayIndex) {
+    const schedule = habit.schedule || 'daily';
+
+    if (schedule === 'daily') return true;
+    if (schedule === 'weekdays') return dayIndex <= 4; // Пн–Пт
+    if (schedule === 'custom') return Array.isArray(habit.activeDays) && habit.activeDays.includes(dayIndex);
+
+    return true;
+}
+
+// Шаг 2. Количество запланированных дней в неделю
+function getPlannedDaysPerWeek(habit) {
+    const schedule = habit.schedule || 'daily';
+    if (schedule === 'daily') return 7;
+    if (schedule === 'weekdays') return 5;
+    if (schedule === 'custom') return Array.isArray(habit.activeDays) ? habit.activeDays.length : 0;
+    return 7;
+}
+
+// Шаг 3. Максимальная цель (3 недели)
+function getMaxGoal(habit) {
+    return getPlannedDaysPerWeek(habit) * 3;
+}
+
+// Шаг 4 + 5.1 + 5.2 — Подсчёт серии
+function calculateStreak(habit) {
+    const completions = habit.completions || [];
+    if (completions.length !== 21) return 0;
+
+    let streak = 0;
+    let foundLastCompleted = false;
+
+    for (let i = 20; i >= 0; i--) {           // идём с самого нового дня
+        const dayOfWeek = i % 7;
+        const isActive = isDayActive(habit, dayOfWeek);
+        const isDone = completions[i];
+
+        if (!foundLastCompleted) {
+            if (isActive && isDone) {
+                foundLastCompleted = true;
+                streak = 1;
+            }
+            continue;
+        }
+
+        if (isActive) {
+            if (isDone) {
+                streak++;
+            } else {
+                break; // прерываем серию
+            }
+        }
+    }
+    return streak;
+}
+
+// ====================== НОРМАЛИЗАЦИЯ ПРИВЫЧКИ ======================
+
+// Шаги 1–4 нормализации
+function normalizeHabit(habit) {
+    let normalized = { ...habit };
+
+    // Шаг 2: Гарантируем activeDays
+    if (!Array.isArray(normalized.activeDays)) {
+        normalized.activeDays = [];
+    }
+
+    // Шаг 3: Гарантируем completions (ровно 21 элемент)
+    if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
+        normalized.completions = Array(21).fill(false);
+    }
+
+    // Шаг 4: Ограничиваем goal
+    const max = getMaxGoal(normalized);
+    normalized.goal = Math.max(0, Math.min(max, Number(normalized.goal) || 0));
 
     return normalized;
 }
