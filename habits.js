@@ -34,29 +34,10 @@ function saveHabits(habits) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
 }
 
-// Инициализация массива привычек
-let habits = loadHabits().map((habit) => {
-  const normalized = normalizeHabit(habit);
+// ====================== ИНИЦИАЛИЗАЦИЯ МАССИВА ПРИВЫЧЕК ======================
+let habits = loadHabits().map(normalizeHabit);
 
-  // === ОТЛАДКА ===
-  console.group(
-    `%cПривычка: ${normalized.name}`,
-    "color: #7F66CC; font-weight: bold",
-  );
-  console.log("Исходная привычка:", habit);
-  console.log("Нормализованная версия:", normalized);
-  console.log("Серия (streak):", calculateStreak(normalized));
-  console.log("Макс. цель:", getMaxGoal(normalized));
-  console.log(
-    "Запланировано дней в неделю:",
-    getPlannedDaysPerWeek(normalized),
-  );
-  console.groupEnd();
-
-  return normalized;
-});
-
-console.log("%cВсе привычки после нормализации:", habits);
+console.log('%cПривычки успешно загружены и нормализованы. Количество:', 'color: #7F66CC; font-weight: bold', habits.length);
 
 // ====================== ОСНОВНАЯ ЛОГИКА ======================
 function init() {
@@ -402,11 +383,11 @@ function normalizeHabit(habit) {
         normalized.activeDays = [];
     }
 
-    // completions — ИСПРАВЛЕНИЕ: никогда не обнуляем, если массив уже существует
+    // completions — КРИТИЧЕСКИ ВАЖНО: не пересоздаём, если уже есть корректный массив
     if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
         normalized.completions = Array(21).fill(false);
     }
-    // Если completions уже есть и длиной 21 — оставляем как есть (главное исправление)
+    // Если completions уже существует и имеет 21 элемент — оставляем как есть!
 
     // goal
     const maxGoal = getMaxGoal(normalized);
