@@ -78,47 +78,36 @@ function escapeHtml(str) {
 }
 
 // ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
+// ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК (полное соответствие практике) ======================
 function renderHabits() {
-  habitsList.innerHTML = "";
+    // Шаг 1: Очистка контейнера
+    habitsList.innerHTML = '';
 
-  if (habits.length === 0) {
-    emptyState.style.display = "block";
-    return;
-  }
-
-  emptyState.style.display = "none";
-
-  habits.forEach((habit, habitIndex) => {
-    // Защита: если completions нет — создаём его на лету
-    if (!habit.completions || habit.completions.length !== 21) {
-      habit.completions = Array(21).fill(false);
+    // Шаг 2: Отображение пустого состояния
+    if (habits.length === 0) {
+        emptyState.style.display = 'block';
+        return;
     }
 
-    const card = document.createElement("div");
-    card.className = "habit-card";
+    emptyState.style.display = 'none';
 
-    let trackerHTML = '<div class="habit-tracker">';
+    // Шаг 3: Итерация по массиву привычек
+    habits.forEach((habit, habitIndex) => {
+        // Защита на случай старых данных
+        if (!habit.completions || habit.completions.length !== 21) {
+            habit.completions = Array(21).fill(false);
+        }
 
-    for (let i = 0; i < 7; i++) {
-      const dayOfWeek = i; // 0 = Пн, 6 = Вс
-      // Берём статус из completions[день в 3-недельном периоде]
-      // Для простоты сейчас используем последние 7 дней (индексы 14–20)
-      const completionIndex = 14 + i; // последние 7 дней
-      const isCompleted = habit.completions[completionIndex] === true;
+        const streak = calculateStreak(habit);
+        const maxGoal = getMaxGoal(habit);
 
-      trackerHTML += `
-                <div class="habit-day ${isCompleted ? "completed" : ""}" 
-                     data-habit-index="${habitIndex}" 
-                     data-completion-index="${completionIndex}">
-                    ${dayLabels[i]}
-                </div>
-            `;
-    }
-    trackerHTML += "</div>";
+        // Шаг 5: Создание DOM-элемента карточки
+        const card = document.createElement('div');
+        card.className = 'habit-card';
+        card.dataset.id = habit.id;                    // Шаг 5 — data-id
 
-    const streak = calculateStreak(habit);
-
-    card.innerHTML = `
+        // Шаг 6: Заполнение структуры карточки
+        card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-info">
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -127,54 +116,81 @@ function renderHabits() {
                     </div>
                     <div class="habit-meta">
                         <span class="habit-category">${getCategoryName(habit.color)}</span>
-                        ${streak > 0 ? `<span style="color:#10b981; font-weight:600;">🔥 ${streak} дней</span>` : ""}
+                        ${streak > 0 ? `<span style="color:#10b981; font-weight:600; margin-left:8px;">🔥 ${streak} дней</span>` : ''}
                     </div>
                 </div>
-                <button class="habit-delete" data-habit-index="${habitIndex}">×</button>
+                <button class="habit-delete" data-id="${habit.id}">×</button>
             </div>
-            
-            ${trackerHTML}
         `;
 
-    habitsList.appendChild(card);
-  });
+        // Шаг 7: Получение контейнера трекера
+        const trackerContainer = document.createElement('div');
+        trackerContainer.className = 'habit-tracker';
 
-  // Клик по дню трекера
-  document.querySelectorAll(".habit-day").forEach((dayEl) => {
-    dayEl.addEventListener("click", () => {
-      const habitIndex = parseInt(dayEl.dataset.habitIndex);
-      const completionIndex = parseInt(dayEl.dataset.completionIndex);
+        // Шаг 8–11: Генерация 21 кнопки трекера
+        for (let i = 0; i < 21; i++) {
+            const dayOfWeek = i % 7;                    // 0 = Пн ... 6 = Вс
+            const isCompleted = habit.completions[i];
+            const isActive = isDayActive(habit, dayOfWeek);
 
-      const habit = habits[habitIndex];
+            const dayBtn = document.createElement('button');   // Шаг 9
+            dayBtn.className = `day-btn ${isCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
+            dayBtn.textContent = dayLabels[dayOfWeek];
+            dayBtn.dataset.index = i;                       // Шаг 9 — data-index
 
-      // Переключаем выполнение
-      // Отладка перед сохранением
-      console.log("%cПеред сохранением (completions):", "color: orange", [
-        ...habit.completions,
-      ]);
+            // Шаг 10: Состояния кнопки
+            if (!isActive) {
+                dayBtn.disabled = true;
+            }
 
-      habit.completions[completionIndex] = !habit.completions[completionIndex];
+            // Шаг 11: Добавление кнопки в трекер
+            trackerContainer.appendChild(dayBtn);
+        }
 
-      console.log("%cПосле переключения (completions):", "color: lime", [
-        ...habit.completions,
-      ]);
+        // Добавляем трекер в карточку
+        card.appendChild(trackerContainer);
 
-      saveHabits(habits);
-      renderHabits();
+        // Добавляем готовую карточку в список
+        habitsList.appendChild(card);
     });
-  });
 
-  // Удаление привычки
-  document.querySelectorAll(".habit-delete").forEach((btn) => {
-    btn.addEventListener("click", (e) => {
-      const habitIndex = parseInt(e.target.dataset.habitIndex);
-      if (confirm("Удалить привычку?")) {
-        habits.splice(habitIndex, 1);
-        saveHabits(habits);
-        renderHabits();
-      }
+    // Обработчики событий (удаление и клик по дням) можно оставить как раньше
+    // (я вынес их отдельно, чтобы не загромождать рендер)
+    attachCardListeners().init();
+}
+
+// Обработчики событий для карточек (удаление и клик по дням)
+function attachCardListeners() {
+    // Удаление
+    document.querySelectorAll('.habit-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = e.target.dataset.id;
+            const index = habits.findIndex(h => h.id === id);
+            if (index !== -1 && confirm('Удалить привычку?')) {
+                habits.splice(index, 1);
+                saveHabits(habits);
+                renderHabits();
+            }
+        });
     });
-  });
+
+    // Клик по дню трекера
+    document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.disabled) return;
+
+            const card = btn.closest('.habit-card');
+            const habitId = card.dataset.id;
+            const dayIndex = parseInt(btn.dataset.index);
+
+            const habit = habits.find(h => h.id === habitId);
+            if (habit) {
+                habit.completions[dayIndex] = !habit.completions[dayIndex];
+                saveHabits(habits);
+                renderHabits();
+            }
+        });
+    });
 }
 
 // ====================== НАСТРОЙКА ЦВЕТОВЫХ ОПЦИЙ ======================
