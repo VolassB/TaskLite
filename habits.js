@@ -121,6 +121,7 @@ function normalizeHabit(habit) {
 }
 
 // ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
+// ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
 function renderHabits() {
     habitsList.innerHTML = '';
 
@@ -170,7 +171,16 @@ function renderHabits() {
             btn.className = `day-btn ${isCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
             btn.textContent = dayLabels[dayOfWeek];
             btn.dataset.index = i;
+
             if (!isActive) btn.disabled = true;
+
+            // === КЛИК ПО ДНЮ (самое важное исправление) ===
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                habit.completions[i] = !habit.completions[i];
+                saveHabits(habits);
+                renderHabits();
+            });
 
             tracker.appendChild(btn);
         }
@@ -178,8 +188,6 @@ function renderHabits() {
         card.appendChild(tracker);
         habitsList.appendChild(card);
     });
-
-    // Обработчики теперь вешаются один раз (в init)
 }
 
 // ====================== ЕДИНЫЙ ОБРАБОТЧИК (Event Delegation) ======================
