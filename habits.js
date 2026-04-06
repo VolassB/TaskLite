@@ -383,7 +383,7 @@ function normalizeHabit(habit) {
         normalized.activeDays = [];
     }
 
-    // completions — КРИТИЧЕСКИ ВАЖНО: не пересоздаём, если уже есть корректный массив
+    // не пересоздаём, если уже есть корректный массив
     if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
         normalized.completions = Array(21).fill(false);
     }

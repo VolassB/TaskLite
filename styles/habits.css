@@ -351,3 +351,31 @@
     border-color: #7F66CC;
     font-weight: 600;
 }
+
+/* ====================== HOVER-СОСТОЯНИЯ (Самостоятельная часть) ====================== */
+
+/* 1. Hover-состояние кнопки отмены */
+.habit-cancel-btn:hover {
+    background-color: #f9fafb;
+    border-color: rgba(0, 0, 0, 0.16);
+}
+
+/* 2. Hover-состояние внешней кнопки добавления привычки */
+.add-habit:hover {
+    background-color: #ffe2c7;
+    border-color: var(--accent-strong);
+}
+
+/* 3. Hover-состояние кнопки подтверждения внутри формы */
+.habit-add-btn:hover {
+    background-color: #ffe2c7;
+    border-color: var(--accent-strong);
+}
+
+/* 4. Hover-состояние кнопок дней недели */
+.weekday-btn:hover {
+    background-color: #ffe7d4;
+    border-color: #f28a3f;
+    color: var(--accent-strong);
+    transform: translateY(-1px);
+}
