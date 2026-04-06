@@ -13,10 +13,9 @@ const colorOptions = document.getElementById('colorOptions');
 const customDaysBlock = document.getElementById('customDaysBlock');
 const daysList = document.getElementById('daysList');
 
-// ====================== КЛЮЧ LOCALSTORAGE ======================
+// ====================== LOCALSTORAGE ======================
 const STORAGE_KEY = 'habits';
 
-// ====================== LOCALSTORAGE ======================
 function loadHabits() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return [];
@@ -24,7 +23,6 @@ function loadHabits() {
         const parsed = JSON.parse(saved);
         return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
-        console.error('Ошибка загрузки привычек:', e);
         return [];
     }
 }
@@ -122,7 +120,7 @@ function normalizeHabit(habit) {
     return normalized;
 }
 
-// ====================== РЕНДЕР (полное соответствие практике) ======================
+// ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
 function renderHabits() {
     habitsList.innerHTML = '';
 
@@ -181,13 +179,14 @@ function renderHabits() {
         habitsList.appendChild(card);
     });
 
-    attachCardListeners();
+    // Обработчики теперь вешаются один раз (в init)
 }
 
+// ====================== ЕДИНЫЙ ОБРАБОТЧИК (Event Delegation) ======================
 function attachCardListeners() {
-    // Удаление
-    document.querySelectorAll('.habit-delete').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+    // Удаление привычки
+    habitsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('habit-delete')) {
             const id = e.target.dataset.id;
             const index = habits.findIndex(h => h.id === id);
             if (index !== -1 && confirm('Удалить привычку?')) {
@@ -195,13 +194,13 @@ function attachCardListeners() {
                 saveHabits(habits);
                 renderHabits();
             }
-        });
-    });
+        }
 
-    // Клик по дню трекера
-    document.querySelectorAll('.day-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        // Клик по дню трекера
+        if (e.target.classList.contains('day-btn')) {
+            const btn = e.target;
             if (btn.disabled) return;
+
             const card = btn.closest('.habit-card');
             const habitId = card.dataset.id;
             const dayIndex = parseInt(btn.dataset.index);
@@ -212,7 +211,97 @@ function attachCardListeners() {
                 saveHabits(habits);
                 renderHabits();
             }
+        }
+    });
+}
+
+// ====================== НАСТРОЙКА ФОРМЫ ======================
+function setupEventListeners() {
+    addHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'block';
+        addHabitBtn.style.display = 'none';
+        habitNameInput.value = '';
+        habitFrequencySelect.value = 'everyday';
+        habitGoalInput.value = '';
+        document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
+        customDaysBlock.classList.add('hidden');
+        habitNameInput.focus();
+    });
+
+    cancelHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
+    });
+
+    saveHabitBtn.addEventListener('click', () => {
+        const name = habitNameInput.value.trim();
+        const selectedColor = habitForm.dataset.selectedColor || 'color-red';
+
+        if (!name) {
+            alert('Введите название привычки');
+            return;
+        }
+
+        const newHabit = {
+            id: Date.now(),
+            name: name,
+            color: selectedColor,
+            schedule: habitFrequencySelect.value,
+            activeDays: [],
+            completions: Array(21).fill(false),
+            goal: parseInt(habitGoalInput.value) || 21
+        };
+
+        habits.unshift(newHabit);
+        saveHabits(habits);
+        renderHabits();
+
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
+    });
+
+    habitFrequencySelect.addEventListener('change', () => {
+        if (habitFrequencySelect.value === 'custom') {
+            customDaysBlock.classList.remove('hidden');
+        } else {
+            customDaysBlock.classList.add('hidden');
+        }
+    });
+}
+
+function setupColorOptions() {
+    colorOptions.innerHTML = '';
+    const colors = [
+        { class: 'color-red', name: 'Здоровье и тело' },
+        { class: 'color-orange', name: 'Дом и быт' },
+        { class: 'color-green', name: 'Спорт' },
+        { class: 'color-blue', name: 'Работа и финансы' },
+        { class: 'color-purple', name: 'Учёба и развитие' },
+        { class: 'color-pink', name: 'Эмоциональное состояние' }
+    ];
+
+    colors.forEach(color => {
+        const row = document.createElement('div');
+        row.className = 'color-row';
+        row.innerHTML = `<div class="color-tag ${color.class}"></div><span>${color.name}</span>`;
+        row.addEventListener('click', () => {
+            document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+            habitForm.dataset.selectedColor = color.class;
         });
+        colorOptions.appendChild(row);
+    });
+}
+
+function setupDaysButtons() {
+    daysList.innerHTML = '';
+    dayLabels.forEach((label, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'day-btn';
+        btn.textContent = label;
+        btn.dataset.day = index;
+        btn.addEventListener('click', () => btn.classList.toggle('active'));
+        daysList.appendChild(btn);
     });
 }
 
@@ -220,12 +309,11 @@ function attachCardListeners() {
 let habits = loadHabits().map(normalizeHabit);
 
 function init() {
-    if (!habitsList || !habitForm) return;
+    if (!habitsList) return;
     renderHabits();
     setupEventListeners();
     setupColorOptions();
     setupDaysButtons();
 }
 
-// Запуск
 document.addEventListener('DOMContentLoaded', init);
