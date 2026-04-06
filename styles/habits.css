@@ -345,7 +345,7 @@
     background: rgba(127, 102, 204, 0.05);
 }
 
-.day-btn.active {
+.day-btn.done {
     background: #7F66CC;
     color: white;
     border-color: #7F66CC;
