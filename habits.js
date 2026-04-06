@@ -121,7 +121,6 @@ function normalizeHabit(habit) {
 }
 
 // ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
-// ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
 function renderHabits() {
     habitsList.innerHTML = '';
 
@@ -171,16 +170,7 @@ function renderHabits() {
             btn.className = `day-btn ${isCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
             btn.textContent = dayLabels[dayOfWeek];
             btn.dataset.index = i;
-
             if (!isActive) btn.disabled = true;
-
-            // === КЛИК ПО ДНЮ (самое важное исправление) ===
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                habit.completions[i] = !habit.completions[i];
-                saveHabits(habits);
-                renderHabits();
-            });
 
             tracker.appendChild(btn);
         }
@@ -188,12 +178,15 @@ function renderHabits() {
         card.appendChild(tracker);
         habitsList.appendChild(card);
     });
+
+    attachCardListeners();   // ← вызываем один раз
 }
 
-// ====================== ЕДИНЫЙ ОБРАБОТЧИК (Event Delegation) ======================
+// ====================== ОБРАБОТЧИКИ (Event Delegation) ======================
 function attachCardListeners() {
-    // Удаление привычки
+    // Один обработчик на весь контейнер (самый надёжный способ)
     habitsList.addEventListener('click', (e) => {
+        // Удаление привычки
         if (e.target.classList.contains('habit-delete')) {
             const id = e.target.dataset.id;
             const index = habits.findIndex(h => h.id === id);
@@ -202,13 +195,12 @@ function attachCardListeners() {
                 saveHabits(habits);
                 renderHabits();
             }
+            return;
         }
 
-        // Клик по дню трекера
-        if (e.target.classList.contains('day-btn')) {
-            const btn = e.target;
-            if (btn.disabled) return;
-
+        // Клик по кнопке дня
+        const btn = e.target.closest('.day-btn');
+        if (btn && !btn.disabled) {
             const card = btn.closest('.habit-card');
             const habitId = card.dataset.id;
             const dayIndex = parseInt(btn.dataset.index);
