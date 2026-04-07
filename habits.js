@@ -173,7 +173,7 @@ function renderHabits() {
 
             if (!isActive) btn.disabled = true;
 
-            // === КЛИК ПО ДНЮ (самое важное исправление) ===
+            // === КЛИК ПО ДНЮ ===
             btn.addEventListener('click', () => {
                 if (btn.disabled) return;
                 habit.completions[i] = !habit.completions[i];

@@ -261,9 +261,10 @@
     margin-top: 20px;
 }
 
+/* Hover-состояние внешней кнопки добавления привычки */
 .add-habit-btn:hover {
-    background: #6b55b3;
-    transform: translateY(-1px);
+    background-color: #ffe2c7;
+    border-color: var(--accent-strong);
 }
 
 /* ====================== КНОПКИ В ФОРМЕ ====================== */
@@ -294,9 +295,15 @@
     transition: all 0.2s;
 }
 
-.btn-cancel:hover {
+/* .btn-cancel:hover {
     background: #f8f9fa;
     border-color: #9ca3af;
+} */
+
+/* Hover-состояние кнопки отмены */
+.btn-cancel:hover {
+    background-color: #f9fafb;
+    border-color: rgba(0, 0, 0, 0.16);
 }
 
 /* ====================== БЛОК КАСТОМНЫХ ДНЕЙ ====================== */
@@ -340,9 +347,17 @@
     transition: all 0.2s;
 }
 
-.day-btn:hover {
+/* .day-btn:hover {
     border-color: #7F66CC;
     background: rgba(127, 102, 204, 0.05);
+} */
+
+/* Hover-состояние кнопок дней недели */
+.day-btn:hover {
+    background-color: #ffe7d4;
+    border-color: #f28a3f;
+    color: var(--accent-strong);
+    transform: translateY(-1px);
 }
 
 .day-btn.done {
@@ -354,28 +369,9 @@
 
 /* ====================== HOVER-СОСТОЯНИЯ (Самостоятельная часть) ====================== */
 
-/* 1. Hover-состояние кнопки отмены */
-.habit-cancel-btn:hover {
-    background-color: #f9fafb;
-    border-color: rgba(0, 0, 0, 0.16);
-}
-
-/* 2. Hover-состояние внешней кнопки добавления привычки */
-.add-habit:hover {
-    background-color: #ffe2c7;
-    border-color: var(--accent-strong);
-}
-
 /* 3. Hover-состояние кнопки подтверждения внутри формы */
 .habit-add-btn:hover {
     background-color: #ffe2c7;
     border-color: var(--accent-strong);
 }
 
-/* 4. Hover-состояние кнопок дней недели */
-.weekday-btn:hover {
-    background-color: #ffe7d4;
-    border-color: #f28a3f;
-    color: var(--accent-strong);
-    transform: translateY(-1px);
-}
