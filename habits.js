@@ -1,4 +1,3 @@
-// ====================== ПОИСК ЭЛЕМЕНТОВ ======================
 const habitsList = document.getElementById('habitsList');
 const habitForm = document.getElementById('habitForm');
 const addHabitBtn = document.getElementById('addHabitBtn');
@@ -13,200 +12,91 @@ const colorOptions = document.getElementById('colorOptions');
 const customDaysBlock = document.getElementById('customDaysBlock');
 const daysList = document.getElementById('daysList');
 
-// ====================== LOCALSTORAGE ======================
 const STORAGE_KEY = 'habits';
 
 function loadHabits() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return [];
-    try {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed : [];
-    } catch (e) {
-        return [];
-    }
+    try { return JSON.parse(saved); } catch { return []; }
 }
 
 function saveHabits(habits) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
 }
 
-// ====================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ======================
-const dayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const dayLabels = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
 const categoryDictionary = {
-    'color-red': 'Здоровье и тело',
-    'color-orange': 'Дом и быт',
-    'color-green': 'Спорт',
-    'color-blue': 'Работа и финансы',
-    'color-purple': 'Учёба и развитие',
-    'color-pink': 'Эмоциональное состояние'
+    'color-red': 'Здоровье и тело', 'color-orange': 'Дом и быт',
+    'color-green': 'Спорт', 'color-blue': 'Работа и финансы',
+    'color-purple': 'Учёба и развитие', 'color-pink': 'Эмоциональное состояние'
 };
 
-function getCategoryName(colorClass) {
-    return categoryDictionary[colorClass] || 'Другое';
-}
+function getCategoryName(c) { return categoryDictionary[c] || 'Другое'; }
+function escapeHtml(str) { return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m]); }
 
-function escapeHtml(str) {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-}
-
-// ====================== ЛОГИКА РАСПИСАНИЯ ======================
-function isDayActive(habit, dayIndex) {
-    const schedule = habit.schedule || 'daily';
-    if (schedule === 'daily') return true;
-    if (schedule === 'weekdays') return dayIndex <= 4;
-    if (schedule === 'custom') return Array.isArray(habit.activeDays) && habit.activeDays.includes(dayIndex);
+function isDayActive(h, d) {
+    const s = h.schedule || 'daily';
+    if (s === 'daily') return true;
+    if (s === 'weekdays') return d <= 4;
+    if (s === 'custom') return Array.isArray(h.activeDays) && h.activeDays.includes(d);
     return true;
 }
 
-function getPlannedDaysPerWeek(habit) {
-    const schedule = habit.schedule || 'daily';
-    if (schedule === 'daily') return 7;
-    if (schedule === 'weekdays') return 5;
-    if (schedule === 'custom') return Array.isArray(habit.activeDays) ? habit.activeDays.length : 0;
-    return 7;
-}
+function getMaxGoal(h) { return (h.schedule === 'weekdays' ? 5 : 7) * 3; }
 
-function getMaxGoal(habit) {
-    return getPlannedDaysPerWeek(habit) * 3;
-}
-
-function calculateStreak(habit) {
-    const completions = habit.completions || [];
-    if (completions.length !== 21) return 0;
-
-    let streak = 0;
-    let foundLast = false;
-
+function calculateStreak(h) {
+    const c = h.completions || [];
+    if (c.length !== 21) return 0;
+    let streak = 0, found = false;
     for (let i = 20; i >= 0; i--) {
-        const dayOfWeek = i % 7;
-        const isActive = isDayActive(habit, dayOfWeek);
-        const isCompleted = completions[i];
-
-        if (!foundLast) {
-            if (isActive && isCompleted) {
-                foundLast = true;
-                streak = 1;
-            }
+        if (!found) {
+            if (isDayActive(h, i%7) && c[i]) { found = true; streak = 1; }
             continue;
         }
-
-        if (isActive) {
-            if (isCompleted) streak++;
-            else break;
+        if (isDayActive(h, i%7)) {
+            if (c[i]) streak++; else break;
         }
     }
     return streak;
 }
 
-// ====================== НОРМАЛИЗАЦИЯ ======================
-function normalizeHabit(habit) {
-    const normalized = { ...habit };
-
-    if (!Array.isArray(normalized.activeDays)) normalized.activeDays = [];
-    if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
-        normalized.completions = Array(21).fill(false);
-    }
-
-    const maxGoal = getMaxGoal(normalized);
-    normalized.goal = Math.max(0, Math.min(maxGoal, Number(normalized.goal) || 0));
-
-    return normalized;
+function normalizeHabit(h) {
+    const n = { ...h };
+    if (!Array.isArray(n.activeDays)) n.activeDays = [];
+    if (!Array.isArray(n.completions) || n.completions.length !== 21) n.completions = Array(21).fill(false);
+    n.goal = Math.max(0, Math.min(getMaxGoal(n), Number(n.goal) || 0));
+    return n;
 }
 
-// ====================== ШАГ 2. ФУНКЦИЯ COMMIT ======================
-function commit() {
-    saveHabits(habits);
-    renderHabits();
-}
+let habits = loadHabits().map(normalizeHabit);
 
-// ====================== ШАГ 3. ПОИСК ПРИВЫЧКИ ПО ID ======================
-function findHabitById(id) {
-    return habits.find(h => h.id === id);
-}
-
-// ====================== ШАГ 4. СБРОС ВЫДЕЛЕНИЯ ДНЕЙ ======================
-function resetDaySelection() {
-    document.querySelectorAll('.day-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-}
-
-// ====================== ШАГ 5. ОТКРЫТИЕ ФОРМЫ ======================
-function openForm() {
-    habitForm.style.display = 'block';
-    addHabitBtn.style.display = 'none';
-    
-    // Очистка формы
-    habitNameInput.value = '';
-    habitFrequencySelect.value = 'everyday';
-    habitGoalInput.value = '';
-    habitForm.dataset.selectedColor = 'color-red';
-    
-    document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
-    customDaysBlock.classList.add('hidden');
-    resetDaySelection();
-    
-    habitNameInput.focus();
-}
-
-// ====================== ШАГ 6. ЗАКРЫТИЕ ФОРМЫ И ОЧИСТКА ======================
-function closeForm() {
-    habitForm.style.display = 'none';
-    addHabitBtn.style.display = 'block';
-    
-    // 6.2 Сброс полей
-    habitNameInput.value = '';
-    habitFrequencySelect.value = 'everyday';
-    habitGoalInput.value = '';
-    
-    // 6.3 Сброс выбора цвета и дней
-    document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
-    resetDaySelection();
-    customDaysBlock.classList.add('hidden');
-}
-
-// ====================== РЕНДЕР СПИСКА ПРИВЫЧЕК ======================
 function renderHabits() {
     habitsList.innerHTML = '';
-
-    if (habits.length === 0) {
-        emptyState.style.display = 'block';
-        return;
-    }
-
+    if (habits.length === 0) { emptyState.style.display = 'block'; return; }
     emptyState.style.display = 'none';
 
-    habits.forEach((habit, habitIndex) => {
-        if (!habit.completions || habit.completions.length !== 21) {
-            habit.completions = Array(21).fill(false);
-        }
-
-        const streak = calculateStreak(habit);
+    habits.forEach(h => {
+        if (!h.completions || h.completions.length !== 21) h.completions = Array(21).fill(false);
+        const streak = calculateStreak(h);
 
         const card = document.createElement('div');
         card.className = 'habit-card';
-        card.dataset.id = habit.id;
+        card.dataset.id = h.id;
 
         card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-info">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div class="habit-color ${habit.color}"></div>
-                        <h3 class="habit-title">${escapeHtml(habit.name)}</h3>
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div class="habit-color ${h.color}"></div>
+                        <h3 class="habit-title">${escapeHtml(h.name)}</h3>
                     </div>
                     <div class="habit-meta">
-                        <span class="habit-category">${getCategoryName(habit.color)}</span>
-                        ${streak > 0 ? `<span style="color:#10b981; font-weight:600; margin-left:8px;">🔥 ${streak} дней</span>` : ''}
+                        <span class="habit-category">${getCategoryName(h.color)}</span>
+                        ${streak > 0 ? `<span style="color:#10b981;font-weight:600;margin-left:8px;">🔥 ${streak} дней</span>` : ''}
                     </div>
                 </div>
-                <button class="habit-delete" data-id="${habit.id}">×</button>
+                <button class="habit-delete" data-id="${h.id}">×</button>
             </div>
         `;
 
@@ -214,56 +104,39 @@ function renderHabits() {
         tracker.className = 'habit-tracker';
 
         for (let i = 0; i < 21; i++) {
-            const dayOfWeek = i % 7;
-            const isCompleted = habit.completions[i];
-            const isActive = isDayActive(habit, dayOfWeek);
-
+            const isCompleted = h.completions[i];
+            const isActive = isDayActive(h, i % 7);
             const btn = document.createElement('button');
             btn.className = `day-btn ${isCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
-            btn.textContent = dayLabels[dayOfWeek];
+            btn.textContent = dayLabels[i % 7];
             btn.dataset.index = i;
-
             if (!isActive) btn.disabled = true;
-
-            // === КЛИК ПО ДНЮ ===
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                habit.completions[i] = !habit.completions[i];
-                saveHabits(habits);
-                renderHabits();
-            });
-
             tracker.appendChild(btn);
         }
-
         card.appendChild(tracker);
         habitsList.appendChild(card);
     });
+
+    attachListeners();
 }
 
-// ====================== ЕДИНЫЙ ОБРАБОТЧИК (Event Delegation) ======================
-function attachCardListeners() {
-    // Удаление привычки
-    habitsList.addEventListener('click', (e) => {
+function attachListeners() {
+    habitsList.addEventListener('click', e => {
         if (e.target.classList.contains('habit-delete')) {
             const id = e.target.dataset.id;
-            const index = habits.findIndex(h => h.id === id);
-            if (index !== -1 && confirm('Удалить привычку?')) {
-                habits.splice(index, 1);
+            const idx = habits.findIndex(h => h.id === id);
+            if (idx !== -1 && confirm('Удалить привычку?')) {
+                habits.splice(idx, 1);
                 saveHabits(habits);
                 renderHabits();
             }
         }
 
-        // Клик по дню трекера
-        if (e.target.classList.contains('day-btn')) {
-            const btn = e.target;
-            if (btn.disabled) return;
-
+        const btn = e.target.closest('.day-btn');
+        if (btn && !btn.disabled) {
             const card = btn.closest('.habit-card');
             const habitId = card.dataset.id;
             const dayIndex = parseInt(btn.dataset.index);
-
             const habit = habits.find(h => h.id === habitId);
             if (habit) {
                 habit.completions[dayIndex] = !habit.completions[dayIndex];
@@ -274,95 +147,17 @@ function attachCardListeners() {
     });
 }
 
-// ====================== НАСТРОЙКА ФОРМЫ ======================
-// ====================== ШАГ 7. НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ ======================
-function setupEventListeners() {
-    // Открытие формы
-    addHabitBtn.addEventListener('click', openForm);
-
-    // Закрытие формы
-    cancelHabitBtn.addEventListener('click', closeForm);
-
-    // Сохранение привычки
-    saveHabitBtn.addEventListener('click', () => {
-        const name = habitNameInput.value.trim();
-        if (!name) {
-            alert('Введите название привычки');
-            return;
-        }
-
-        const selectedColor = habitForm.dataset.selectedColor || 'color-red';
-
-        const newHabit = {
-            id: Date.now(),
-            name: name,
-            color: selectedColor,
-            schedule: habitFrequencySelect.value,
-            activeDays: [],
-            completions: Array(21).fill(false),
-            goal: parseInt(habitGoalInput.value) || 21
-        };
-
-        habits.unshift(newHabit);
-        commit();                    // Шаг 2 — используем commit
-        closeForm();
-    });
-
-    // Переключение блока кастомных дней
-    habitFrequencySelect.addEventListener('change', () => {
-        if (habitFrequencySelect.value === 'custom') {
-            customDaysBlock.classList.remove('hidden');
-        } else {
-            customDaysBlock.classList.add('hidden');
-        }
-    });
-}
-
-function setupColorOptions() {
-    colorOptions.innerHTML = '';
-    const colors = [
-        { class: 'color-red', name: 'Здоровье и тело' },
-        { class: 'color-orange', name: 'Дом и быт' },
-        { class: 'color-green', name: 'Спорт' },
-        { class: 'color-blue', name: 'Работа и финансы' },
-        { class: 'color-purple', name: 'Учёба и развитие' },
-        { class: 'color-pink', name: 'Эмоциональное состояние' }
-    ];
-
-    colors.forEach(color => {
-        const row = document.createElement('div');
-        row.className = 'color-row';
-        row.innerHTML = `<div class="color-tag ${color.class}"></div><span>${color.name}</span>`;
-        row.addEventListener('click', () => {
-            document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
-            row.classList.add('selected');
-            habitForm.dataset.selectedColor = color.class;
-        });
-        colorOptions.appendChild(row);
-    });
-}
-
-function setupDaysButtons() {
-    daysList.innerHTML = '';
-    dayLabels.forEach((label, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'day-btn';
-        btn.textContent = label;
-        btn.dataset.day = index;
-        btn.addEventListener('click', () => btn.classList.toggle('active'));
-        daysList.appendChild(btn);
-    });
-}
-
-// ====================== ИНИЦИАЛИЗАЦИЯ ======================
-let habits = loadHabits().map(normalizeHabit);
-
 function init() {
-    if (!habitsList) return;
     renderHabits();
-    setupEventListeners();
-    setupColorOptions();
-    setupDaysButtons();
+    // Форма (открытие/закрытие) уже работала, оставляем как есть
+    addHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'block';
+        addHabitBtn.style.display = 'none';
+    });
+    cancelHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
+    });
 }
 
 document.addEventListener('DOMContentLoaded', init);

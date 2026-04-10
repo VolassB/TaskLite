@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="./styles/header.css" />
     <link rel="stylesheet" href="./styles/habits.css" />
     <title>TaskLite — Привычки</title>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
 </head>
 <body>
     <header class="header">
@@ -25,62 +23,43 @@
 
     <main class="main habits">
         <h2 class="habits--title">Трекер привычек</h2>
-        
+
         <p class="habits-empty" id="emptyState">
             Пока нет привычек. Нажми «Добавить привычку», чтобы начать.
         </p>
 
         <!-- Список привычек -->
-        <div class="habits-list" id="habitsList">
-            <!-- Карточки привычек будут добавляться через JS -->
-        </div>
+        <div class="habits-list" id="habitsList"></div>
 
-        <!-- Кнопка добавления привычки (вне формы) -->
+        <!-- Кнопка добавления -->
         <button class="add-habit-btn" id="addHabitBtn">
             Добавить привычку
         </button>
 
-        <!-- Форма добавления привычки (скрыта по умолчанию) -->
+        <!-- Форма -->
         <div class="habit-form" id="habitForm" style="display: none;">
             <h3>Новая привычка</h3>
-            
+
             <div class="form-row">
-                <input 
-                    type="text" 
-                    class="habit-input" 
-                    id="habitName" 
-                    placeholder="Название привычки" 
-                />
+                <input type="text" class="habit-input" id="habitName" placeholder="Название привычки" />
                 <select class="habit-select" id="habitFrequency">
                     <option value="everyday">Каждый день</option>
                     <option value="weekdays">Будни</option>
                     <option value="custom">Свой график</option>
                 </select>
-                <input 
-                    type="number" 
-                    class="habit-input" 
-                    id="habitGoal" 
-                    placeholder="Цель (в днях)" 
-                    min="1"
-                />
+                <input type="number" class="habit-input" id="habitGoal" placeholder="Цель (в днях)" min="1" />
             </div>
 
-            <!-- Выбор категории (цвет + название) -->
-            <div class="color-options" id="colorOptions">
-                <!-- Заполняется через JS -->
-            </div>
+            <div class="color-options" id="colorOptions"></div>
 
-            <!-- Блок кастомных дней (пока скрыт) -->
             <div class="custom-days" id="customDaysBlock" style="display: none;">
                 <h4>Выберите дни</h4>
-                <div class="days-list" id="daysList">
-                    <!-- Кнопки дней недели будут добавлены через JS -->
-                </div>
+                <div class="days-list" id="daysList"></div>
             </div>
 
             <div class="form-actions">
-                <button class="btn-save" id="saveHabitBtn">Сохранить привычку</button>
-                <button class="btn-cancel" id="cancelHabitBtn">Отмена</button>
+                <button class="habit-add-btn" id="saveHabitBtn">Сохранить привычку</button>
+                <button class="habit-cancel-btn" id="cancelHabitBtn">Отмена</button>
             </div>
         </div>
     </main>

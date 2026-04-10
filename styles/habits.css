@@ -1,4 +1,3 @@
-/* ====================== ОБЩИЕ СТИЛИ СТРАНИЦЫ ====================== */
 .main.habits {
     padding: 86px calc(50% - 555px) 120px;
     min-height: 100vh;
@@ -7,371 +6,120 @@
     gap: 40px;
 }
 
-.habits--title {
-    font-family: var(--font-family-title);
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 100%;
-    margin-bottom: 8px;
-    align-self: flex-start;
-}
+.habits--title { font-size: 24px; font-weight: 400; }
 
 .habits-empty {
     text-align: center;
     color: #6b7280;
     font-size: 15px;
-    margin: 20px 0 40px 0;
+    margin: 40px 0;
 }
 
-/* ====================== СПИСОК ПРИВЫЧЕК ====================== */
-
-.habits-list {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 40px;
-}
-
-.habit-card {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.habit-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.habit-color {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, 0.8);
-}
-
-.habit-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.habit-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #221c2a;
-    margin: 0;
-    line-height: 1.3;
-}
-
-.habit-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.habit-category {
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: rgba(127, 102, 204, 0.1);
-    color: #7F66CC;
-    font-weight: 500;
-}
-
-.habit-delete {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    font-size: 22px;
-    color: #cb6e6e;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.habit-delete:hover {
-    background: rgba(203, 110, 110, 0.1);
-    transform: scale(1.1);
-}
-
-.habit-tracker {
-    display: flex;
-    gap: 6px;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.habit-day {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 600;
-    background: #f8f9fa;
-    border: 1px solid #e5e7eb;
-    color: #6b7280;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-
-.habit-day:hover {
-    background: #e0e7ff;
-    border-color: #7F66CC;
-    color: #4f46e5;
-}
-
-.habit-day.active {
-    background: #7F66CC;
-    border-color: #7F66CC;
-    color: white;
-    font-weight: 700;
-}
-
-.habit-day.completed {
-    background: #10b981;
-    border-color: #10b981;
-    color: white;
-}
-
-/* ====================== ФОРМА ДОБАВЛЕНИЯ ПРИВЫЧКИ ====================== */
-
+/* ====================== ФОРМА ====================== */
 .habit-form {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255,255,255,0.95);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255,255,255,0.8);
     border-radius: 16px;
     padding: 32px 40px;
     width: 100%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.01);
+    max-width: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     gap: 24px;
-    margin-top: 20px;
-    margin-bottom: 80px;
-    animation: fadeInForm 0.3s ease forwards;
 }
 
-@keyframes fadeInForm {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.habit-form h3 {
-    margin: 0 0 12px 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: #221c2a;
-}
-
-.form-row {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
+.form-row { display: flex; gap: 16px; align-items: center; }
 
 .habit-input,
 .habit-select {
     flex: 1;
-    min-width: 0;
     padding: 12px 16px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 15px;
     background: #fff;
-    font-family: var(--font-family-desc);
-    transition: all 0.2s;
 }
 
 .habit-input:focus,
 .habit-select:focus {
-    outline: none;
     border-color: #7F66CC;
-    box-shadow: 0 0 0 3px rgba(127, 102, 204, 0.15);
+    box-shadow: 0 0 0 3px rgba(127,102,204,0.15);
 }
 
-.color-options {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* ====================== КАРТОЧКИ ====================== */
+.habit-card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
-.color-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 6px 0;
-    cursor: pointer;
+.habit-header { display: flex; justify-content: space-between; align-items: flex-start; }
+
+.habit-color {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
 }
 
-.color-tag {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+.habit-title { font-size: 16px; font-weight: 700; margin: 0; }
+
+.habit-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.habit-category {
+    font-size: 12px; padding: 4px 10px; border-radius: 20px;
+    background: rgba(127,102,204,0.1); color: #7F66CC;
 }
 
-.color-row:hover .color-tag {
-    transform: scale(1.15);
+/* ====================== ТРЕКЕР ====================== */
+.habit-tracker {
+    display: flex; gap: 6px; margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid rgba(0,0,0,0.06);
 }
 
-.color-red    { background: #ef4444; }
-.color-orange { background: #f59e0b; }
-.color-green  { background: #10b981; }
-.color-blue   { background: #3b82f6; }
-.color-purple { background: #8b5cf6; }
-.color-pink   { background: #ec4899; }
+.day-btn {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px; font-size: 13px; font-weight: 600;
+    background: #f8f9fa; border: 1px solid #e5e7eb;
+    cursor: pointer; transition: all 0.2s;
+}
 
-/* ====================== ВНЕШНЯЯ КНОПКА ====================== */
+.day-btn.done { background: #10b981; border-color: #10b981; color: white; }
+.day-btn.day--off { opacity: 0.4; cursor: not-allowed; }
 
-.add-habit-btn {
-    align-self: flex-start;
+/* ====================== КНОПКИ ====================== */
+.add-habit-btn,
+.habit-add-btn {
     padding: 14px 32px;
     background: #7F66CC;
     color: white;
     border: none;
     border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 20px;
-}
-
-/* Hover-состояние внешней кнопки добавления привычки */
-.add-habit-btn:hover {
-    background-color: #ffe2c7;
-    border-color: var(--accent-strong);
-}
-
-/* ====================== КНОПКИ В ФОРМЕ ====================== */
-
-.btn-save {
-    padding: 12px 24px;
-    background: #7F66CC;
-    color: white;
-    border: none;
-    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 
-.btn-save:hover {
-    background: #6b55b3;
-}
-
-.btn-cancel {
-    padding: 12px 24px;
-    background: transparent;
-    color: #6b7280;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-/* .btn-cancel:hover {
-    background: #f8f9fa;
-    border-color: #9ca3af;
-} */
-
-/* Hover-состояние кнопки отмены */
-.btn-cancel:hover {
-    background-color: #f9fafb;
-    border-color: rgba(0, 0, 0, 0.16);
-}
-
-/* ====================== БЛОК КАСТОМНЫХ ДНЕЙ ====================== */
-
-.custom-days {
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(127, 102, 204, 0.2);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.custom-days.hidden {
-    display: none;
-}
-
-.custom-days h4 {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    font-weight: 600;
-    color: #221c2a;
-}
-
-.days-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.day-btn {
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-/* .day-btn:hover {
-    border-color: #7F66CC;
-    background: rgba(127, 102, 204, 0.05);
-} */
-
-/* Hover-состояние кнопок дней недели */
-.day-btn:hover {
-    background-color: #ffe7d4;
-    border-color: #f28a3f;
-    color: var(--accent-strong);
+.add-habit-btn:hover,
+.habit-add-btn:hover {
+    background: #6952b8;
     transform: translateY(-1px);
 }
 
-.day-btn.done {
-    background: #7F66CC;
-    color: white;
-    border-color: #7F66CC;
-    font-weight: 600;
+.habit-cancel-btn {
+    padding: 14px 32px;
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* ====================== HOVER-СОСТОЯНИЯ (Самостоятельная часть) ====================== */
-
-/* 3. Hover-состояние кнопки подтверждения внутри формы */
-.habit-add-btn:hover {
-    background-color: #ffe2c7;
-    border-color: var(--accent-strong);
+.habit-cancel-btn:hover {
+    background: #f9fafb;
+    border-color: rgba(0,0,0,0.16);
 }
-
