@@ -43,8 +43,6 @@ function isDayActive(h, d) {
     return true;
 }
 
-function getMaxGoal(h) { return (h.schedule === 'weekdays' ? 5 : 7) * 3; }
-
 function calculateStreak(h) {
     const c = h.completions || [];
     if (c.length !== 21) return 0;
@@ -65,7 +63,6 @@ function normalizeHabit(h) {
     const n = { ...h };
     if (!Array.isArray(n.activeDays)) n.activeDays = [];
     if (!Array.isArray(n.completions) || n.completions.length !== 21) n.completions = Array(21).fill(false);
-    n.goal = Math.max(0, Math.min(getMaxGoal(n), Number(n.goal) || 0));
     return n;
 }
 
@@ -73,7 +70,10 @@ let habits = loadHabits().map(normalizeHabit);
 
 function renderHabits() {
     habitsList.innerHTML = '';
-    if (habits.length === 0) { emptyState.style.display = 'block'; return; }
+    if (habits.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+    }
     emptyState.style.display = 'none';
 
     habits.forEach(h => {
@@ -149,12 +149,35 @@ function attachListeners() {
 
 function init() {
     renderHabits();
-    // Форма (открытие/закрытие) уже работала, оставляем как есть
+
+    // Форма
     addHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'block';
         addHabitBtn.style.display = 'none';
     });
+
     cancelHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
+    });
+
+    saveHabitBtn.addEventListener('click', () => {
+        const name = habitNameInput.value.trim();
+        if (!name) return alert('Введите название');
+
+        const newHabit = {
+            id: Date.now(),
+            name,
+            color: habitForm.dataset.selectedColor || 'color-red',
+            schedule: habitFrequencySelect.value,
+            activeDays: [],
+            completions: Array(21).fill(false),
+            goal: parseInt(habitGoalInput.value) || 21
+        };
+
+        habits.unshift(newHabit);
+        saveHabits(habits);
+        renderHabits();
         habitForm.style.display = 'none';
         addHabitBtn.style.display = 'block';
     });
