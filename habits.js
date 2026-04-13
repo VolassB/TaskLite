@@ -316,8 +316,9 @@ function setupColorOptions() {
     });
 }
 // ====================== НАСТРОЙКА ДНЕЙ (исправленная) ======================
+// ====================== СОЗДАНИЕ КНОПОК ДНЕЙ ======================
 function setupDaysButtons() {
-    daysList.innerHTML = '';   // очищаем перед созданием
+    daysList.innerHTML = '';
 
     dayLabels.forEach((label, index) => {
         const btn = document.createElement('button');
@@ -334,9 +335,7 @@ function setupEventListeners() {
     addHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'block';
         addHabitBtn.style.display = 'none';
-        
-        // При открытии формы всегда пересоздаём кнопки дней
-        setupDaysButtons();
+        setupDaysButtons();           // ← обязательно пересоздаём кнопки
     });
 
     // Закрытие формы
@@ -345,7 +344,7 @@ function setupEventListeners() {
         addHabitBtn.style.display = 'block';
     });
 
-    // Шаг 1. Реагируем на изменение расписания
+    // Изменение типа расписания
     habitFrequencySelect.addEventListener('change', () => {
         if (habitFrequencySelect.value === 'custom') {
             customDaysBlock.style.display = 'block';
@@ -354,7 +353,7 @@ function setupEventListeners() {
         }
     });
 
-    // Шаг 2. Клик по дням в кастомном графике
+    // === КЛИК ПО ДНЯМ (самое важное исправление) ===
     daysList.addEventListener('click', (e) => {
         const btn = e.target.closest('.day-btn');
         if (btn) {
