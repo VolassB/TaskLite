@@ -120,25 +120,43 @@ function normalizeHabit(habit) {
     return normalized;
 }
 
-// ====================== ШАГ 2. ФУНКЦИЯ COMMIT ======================
+// Шаг 3. Получить выбранные дни недели
+function getSelectedDays() {
+    return Array.from(daysList.querySelectorAll('.day-btn.active'))
+                .map(btn => parseInt(btn.dataset.day));
+}
+
+// Шаг 4 + 5. Обработчики цвета
+function setupColorSelection() {
+    colorOptions.addEventListener('click', (e) => {
+        const row = e.target.closest('.color-row');
+        if (!row) return;
+
+        document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
+        row.classList.add('selected');
+        habitForm.dataset.selectedColor = row.querySelector('.color-tag').classList[1];
+    });
+}
+
+// ====================== ФУНКЦИЯ COMMIT ======================
 function commit() {
     saveHabits(habits);
     renderHabits();
 }
 
-// ====================== ШАГ 3. ПОИСК ПРИВЫЧКИ ПО ID ======================
+// ====================== ПОИСК ПРИВЫЧКИ ПО ID ======================
 function findHabitById(id) {
     return habits.find(h => h.id === id);
 }
 
-// ====================== ШАГ 4. СБРОС ВЫДЕЛЕНИЯ ДНЕЙ ======================
+// ====================== СБРОС ВЫДЕЛЕНИЯ ДНЕЙ ======================
 function resetDaySelection() {
     document.querySelectorAll('.day-btn').forEach(btn => {
         btn.classList.remove('active');
     });
 }
 
-// ====================== ШАГ 5. ОТКРЫТИЕ ФОРМЫ ======================
+// ====================== ОТКРЫТИЕ ФОРМЫ ======================
 function openForm() {
     habitForm.style.display = 'block';
     addHabitBtn.style.display = 'none';
@@ -274,16 +292,25 @@ function attachCardListeners() {
     });
 }
 
-// ====================== НАСТРОЙКА ФОРМЫ ======================
-// ====================== ШАГ 7. НАЗНАЧЕНИЕ ОБРАБОТЧИКОВ ======================
+// ====================== НАСТРОЙКА ФОРМЫ (все шаги практики) ======================
 function setupEventListeners() {
-    // Открытие формы
-    addHabitBtn.addEventListener('click', openForm);
 
-    // Закрытие формы
-    cancelHabitBtn.addEventListener('click', closeForm);
+    // Шаг 1. Реагировать на изменение расписания
+    habitFrequencySelect.addEventListener('change', () => {
+        if (habitFrequencySelect.value === 'custom') {
+            customDaysBlock.style.display = 'block';
+        } else {
+            customDaysBlock.style.display = 'none';
+        }
+    });
 
-    // Сохранение привычки
+    // Шаг 2. Выбор отдельных дней недели
+    daysList.addEventListener('click', (e) => {
+        const btn = e.target.closest('.day-btn');
+        if (btn) btn.classList.toggle('active');
+    });
+
+    // Шаг 6–12. Обработчик сохранения привычки
     saveHabitBtn.addEventListener('click', () => {
         const name = habitNameInput.value.trim();
         if (!name) {
@@ -291,30 +318,50 @@ function setupEventListeners() {
             return;
         }
 
-        const selectedColor = habitForm.dataset.selectedColor || 'color-red';
+        const schedule = habitFrequencySelect.value;
+        let activeDays = [];
+
+        if (schedule === 'custom') {
+            activeDays = getSelectedDays();
+            if (activeDays.length === 0) {
+                alert('При выборе "Свой график" нужно отметить хотя бы один день');
+                return;
+            }
+        }
+
+        const colorClass = habitForm.dataset.selectedColor || 'color-red';
+        const goal = parseInt(habitGoalInput.value) || 21;
 
         const newHabit = {
             id: Date.now(),
             name: name,
-            color: selectedColor,
-            schedule: habitFrequencySelect.value,
-            activeDays: [],
+            color: colorClass,
+            schedule: schedule,
+            activeDays: activeDays,
             completions: Array(21).fill(false),
-            goal: parseInt(habitGoalInput.value) || 21
+            goal: goal
         };
 
         habits.unshift(newHabit);
-        commit();                    // Шаг 2 — используем commit
-        closeForm();
+        saveHabits(habits);
+        renderHabits();
+
+        // Закрытие формы
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
     });
 
-    // Переключение блока кастомных дней
-    habitFrequencySelect.addEventListener('change', () => {
-        if (habitFrequencySelect.value === 'custom') {
-            customDaysBlock.classList.remove('hidden');
-        } else {
-            customDaysBlock.classList.add('hidden');
-        }
+    // Открытие формы
+    addHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'block';
+        addHabitBtn.style.display = 'none';
+        habitNameInput.focus();
+    });
+
+    // Закрытие формы
+    cancelHabitBtn.addEventListener('click', () => {
+        habitForm.style.display = 'none';
+        addHabitBtn.style.display = 'block';
     });
 }
 
@@ -363,6 +410,7 @@ function init() {
     setupEventListeners();
     setupColorOptions();
     setupDaysButtons();
+    setupColorSelection();
 }
 
 document.addEventListener('DOMContentLoaded', init);
