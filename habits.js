@@ -78,13 +78,14 @@ function getMaxGoal(habit) {
 }
 
 function calculateStreak(habit) {
+    const period = habit.trackingDays || 21;
     const completions = habit.completions || [];
     if (completions.length !== 21) return 0;
 
     let streak = 0;
     let foundLast = false;
 
-    for (let i = 20; i >= 0; i--) {
+    for (let i = period - 1; i >= 0; i--) {
         const dayOfWeek = i % 7;
         const isActive = isDayActive(habit, dayOfWeek);
         const isCompleted = completions[i];
@@ -110,8 +111,12 @@ function normalizeHabit(habit) {
     const normalized = { ...habit };
 
     if (!Array.isArray(normalized.activeDays)) normalized.activeDays = [];
-    if (!Array.isArray(normalized.completions) || normalized.completions.length !== 21) {
-        normalized.completions = Array(21).fill(false);
+    
+    const period = normalized.trackingDays || 21;
+    normalized.trackingDays = period;
+
+    if (!Array.isArray(normalized.completions) || normalized.completions.length !== period) {
+        normalized.completions = Array(period).fill(false);
     }
 
     const maxGoal = getMaxGoal(normalized);
@@ -120,13 +125,13 @@ function normalizeHabit(habit) {
     return normalized;
 }
 
-// Шаг 3. Получить выбранные дни недели
+// Получить выбранные дни недели
 function getSelectedDays() {
     return Array.from(daysList.querySelectorAll('.day-btn.active'))
                 .map(btn => parseInt(btn.dataset.day));
 }
 
-// Шаг 4 + 5. Обработчики цвета
+// Обработчики цвета
 function setupColorSelection() {
     colorOptions.addEventListener('click', (e) => {
         const row = e.target.closest('.color-row');
@@ -174,17 +179,17 @@ function openForm() {
     habitNameInput.focus();
 }
 
-// ====================== ШАГ 6. ЗАКРЫТИЕ ФОРМЫ И ОЧИСТКА ======================
+// ====================== ЗАКРЫТИЕ ФОРМЫ И ОЧИСТКА ======================
 function closeForm() {
     habitForm.style.display = 'none';
     addHabitBtn.style.display = 'block';
     
-    // 6.2 Сброс полей
+    // Сброс полей
     habitNameInput.value = '';
     habitFrequencySelect.value = 'everyday';
     habitGoalInput.value = '';
     
-    // 6.3 Сброс выбора цвета и дней
+    // Сброс выбора цвета и дней
     document.querySelectorAll('.color-row').forEach(r => r.classList.remove('selected'));
     resetDaySelection();
     customDaysBlock.classList.add('hidden');
@@ -202,8 +207,10 @@ function renderHabits() {
     emptyState.style.display = 'none';
 
     habits.forEach((habit, habitIndex) => {
-        if (!habit.completions || habit.completions.length !== 21) {
-            habit.completions = Array(21).fill(false);
+        const period = habit.trackingDays || 21;
+
+        if (!habit.completions || habit.completions.length !== period) {
+            habit.completions = Array(period).fill(false);
         }
 
         const streak = calculateStreak(habit);
@@ -231,7 +238,7 @@ function renderHabits() {
         const tracker = document.createElement('div');
         tracker.className = 'habit-tracker';
 
-        for (let i = 0; i < 21; i++) {
+        for (let i = 0; i < period; i++) {
             const dayOfWeek = i % 7;
             const isCompleted = habit.completions[i];
             const isActive = isDayActive(habit, dayOfWeek);
@@ -315,7 +322,7 @@ function setupColorOptions() {
         colorOptions.appendChild(row);
     });
 }
-// ====================== НАСТРОЙКА ДНЕЙ (исправленная) ======================
+// ====================== НАСТРОЙКА ДНЕЙ ======================
 // ====================== СОЗДАНИЕ КНОПОК ДНЕЙ ======================
 function setupDaysButtons() {
     daysList.innerHTML = '';
@@ -335,7 +342,8 @@ function setupEventListeners() {
     addHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'block';
         addHabitBtn.style.display = 'none';
-        setupDaysButtons();           // ← обязательно пересоздаём кнопки
+        setupDaysButtons();
+        habitGoalInput.value = '21';
     });
 
     // Закрытие формы
@@ -377,14 +385,17 @@ function setupEventListeners() {
                               .map(btn => parseInt(btn.dataset.day));
         }
 
+        const trackingDays = parseInt(habitGoalInput.value) || 21;
+
         const newHabit = {
             id: Date.now(),
             name: name,
             color: habitForm.dataset.selectedColor || 'color-red',
             schedule: schedule,
             activeDays: activeDays,
-            completions: Array(21).fill(false),
-            goal: parseInt(habitGoalInput.value) || 21
+            trackingDays: trackingDays,
+            completions: Array(trackingDays).fill(false),
+            goal: trackingDays
         };
 
         habits.unshift(newHabit);
