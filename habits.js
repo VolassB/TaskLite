@@ -80,7 +80,7 @@ function getMaxGoal(habit) {
 function calculateStreak(habit) {
     const period = habit.trackingDays || 21;
     const completions = habit.completions || [];
-    if (completions.length !== 21) return 0;
+    if (completions.length !== period) return 0;
 
     let streak = 0;
     let foundLast = false;
