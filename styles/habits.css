@@ -111,11 +111,13 @@
     transform: scale(1.1);
 }
 
+/* Трекер — 3 недели по 7 дней */
 .habit-tracker {
-    display: flex;
-    gap: 6px;
-    margin-top: 12px;
-    padding-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);   /* ровно 7 колонок */
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -337,20 +339,19 @@
 }
 
 .day-btn {
-    padding: 10px 14px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #fff;
+    width: 100%;                    /* занимает всю ячейку */
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
-
-/* .day-btn:hover {
-    border-color: #7F66CC;
-    background: rgba(127, 102, 204, 0.05);
-} */
 
 /* Hover-состояние кнопок дней недели */
 .day-btn:hover {
@@ -365,6 +366,11 @@
     color: white;
     border-color: #7F66CC;
     font-weight: 600;
+}
+
+.day-btn.day--off {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 /* ====================== HOVER-СОСТОЯНИЯ (Самостоятельная часть) ====================== */
