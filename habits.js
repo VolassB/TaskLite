@@ -258,9 +258,22 @@ function renderHabits() {
         const weeksContainer = document.createElement('div');
         weeksContainer.className = 'weeks-container';
 
-        const startWeek = showAll ? 0 : Math.max(0, numWeeks - 3);
+        const incompleteWeekIndices = [];
+        for (let w = 0; w < numWeeks; w++) {
+            const startIdx = w * 7;
+            const weekLength = Math.min(7, period - startIdx);
+            const isCompleted = isWeekCompleted(habit, startIdx, weekLength);
+            if (!isCompleted) {
+                incompleteWeekIndices.push(w)
+            }
+        }
 
-        for (let w = startWeek; w < numWeeks; w++) {
+        // Какие недели показывать по умолчанию
+        const weeksToShow = showAll 
+            ? Array.from({ length: numWeeks }, (_, i) => i) 
+            : incompleteWeekIndices.slice(0, 3);
+
+        for (let w of weeksToShow) {
             const startIdx = w * 7;
             const weekLength = Math.min(7, period - startIdx);
             const isCompleted = isWeekCompleted(habit, startIdx, weekLength);
@@ -321,12 +334,23 @@ function renderHabits() {
         }
 
         // Кнопка «Показать / Скрыть историю»
-        if (numWeeks > 3) {
+        const hasHiddenContent = incompleteWeekIndices.length > 3 || incompleteWeekIndices.length < numWeeks;
+        if (!showAll && hasHiddenContent) {
             const historyBtn = document.createElement('button');
             historyBtn.className = 'history-btn';
-            historyBtn.textContent = showAll ? 'Скрыть историю' : 'Показать историю';
+            historyBtn.textContent = 'Показать историю';
             historyBtn.addEventListener('click', () => {
-                habit.showAllWeeks = !habit.showAllWeeks;
+                habit.showAllWeeks = true;
+                saveHabits(habits);
+                renderHabits();
+            });
+            weeksContainer.appendChild(historyBtn);
+        } else if (showAll && numWeeks > 0) {
+            const historyBtn = document.createElement('button');
+            historyBtn.className = 'history-btn';
+            historyBtn.textContent = 'Скрыть историю';
+            historyBtn.addEventListener('click', () => {
+                habit.showAllWeeks = false;
                 saveHabits(habits);
                 renderHabits();
             });
