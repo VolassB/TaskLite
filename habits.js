@@ -326,11 +326,7 @@ function renderHabits() {
             if (isCompleted) daysDiv.style.display = 'none';
 
             // Клик по заголовку — сворачивание/разворачивание
-            header.addEventListener('click', (e) => {
-                // игнорируем клик по кнопке удаления (если она внутри)
-                if (e.target.classList.contains('habit-delete')) return;
-                daysDiv.style.display = daysDiv.style.display === 'none' ? 'flex' : 'none';
-            });
+            header.addEventListener('click', (e) => daysDiv.style.display = daysDiv.style.display === 'none' ? 'flex' : 'none');
 
             weekDiv.appendChild(header);
             weekDiv.appendChild(daysDiv);
@@ -366,18 +362,19 @@ function renderHabits() {
     });
 }
 
-// ====================== ЕДИНЫЙ ОБРАБОТЧИК (Event Delegation) ======================
+// ====================== ЕДИНЫЙ ОБРАБОТЧИК КЛИКОВ (Event Delegation) ======================
 function attachCardListeners() {
-    // Удаление привычки
     habitsList.addEventListener('click', (e) => {
         if (e.target.classList.contains('habit-delete')) {
             const id = e.target.dataset.id;
-            const index = habits.findIndex(h => h.id === id);
-            if (index !== -1 && confirm('Удалить привычку?')) {
+            const index = habits.findIndex(h => h.id === Number(id));
+
+            if (index !== -1 && confirm('Удалить привычку и всю её историю?')) {
                 habits.splice(index, 1);
-                saveHabits(habits);
+                saveHabits();
                 renderHabits();
             }
+            return;
         }
 
         // Клик по дню трекера
@@ -445,7 +442,7 @@ function setupEventListeners() {
         addHabitBtn.style.display = 'none';
         setupDaysButtons();
         habitGoalInput.value = '21';
-        customDaysBlock.style.display = 'none';   // ← добавь эту строку
+        customDaysBlock.style.display = 'none';
         habitFrequencySelect.value = 'everyday';
     });
 
@@ -464,7 +461,7 @@ function setupEventListeners() {
         }
     });
 
-    // === КЛИК ПО ДНЯМ (самое важное исправление) ===
+    // === КЛИК ПО ДНЯМ  ===
     daysList.addEventListener('click', (e) => {
         const btn = e.target.closest('.day-btn');
         if (btn) {
@@ -484,7 +481,7 @@ function setupEventListeners() {
         let activeDays = [];
 
         if (schedule === 'custom') {
-            activeDays = Array.from(daysList.querySelectorAll('.day-btn.active'))
+            activeDays = Array.from(daysList.querySelectorAll('.day-btn.done'))
                               .map(btn => parseInt(btn.dataset.day));
         }
 
@@ -517,6 +514,7 @@ let habits = loadHabits().map(normalizeHabit);
 function init() {
     if (!habitsList) return;
     renderHabits();
+    attachCardListeners();
     setupEventListeners();
     setupColorOptions();
     setupDaysButtons();
