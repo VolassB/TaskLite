@@ -131,7 +131,11 @@ function normalizeHabit(habit) {
         normalized.completions = Array(period).fill(false);
     }
 
-    const maxGoal = getMaxGoal(normalized);
+    if (typeof normalized.showAllWeeks === 'undefined') {
+        normalized.showAllWeeks = false;
+    }
+
+    const maxGoal = getPlannedDaysPerWeek(normalized) * 3; // используем существующую функцию
     normalized.goal = Math.max(0, Math.min(maxGoal, Number(normalized.goal) || 0));
 
     return normalized;
@@ -226,12 +230,14 @@ function renderHabits() {
         }
 
         const streak = calculateStreak(habit);
+        const numWeeks = Math.ceil(period/7);
+        const showAll = habit.showAllWeeks === true;
 
         const card = document.createElement('div');
         card.className = 'habit-card';
         card.dataset.id = habit.id;
 
-        // Заголовок карточки
+        // Карточка
         card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-info">
@@ -248,13 +254,13 @@ function renderHabits() {
             </div>
         `;
 
-        // === НОВЫЙ НЕДЕЛЬНЫЙ ТРЕКЕР ===
+        // === НЕДЕЛЬНЫЙ ТРЕКЕР ===
         const weeksContainer = document.createElement('div');
         weeksContainer.className = 'weeks-container';
 
-        const numWeeks = Math.ceil(period / 7);
+        const startWeek = showAll ? 0 : Math.max(0, numWeeks - 3);
 
-        for (let w = 0; w < numWeeks; w++) {
+        for (let w = startWeek; w < numWeeks; w++) {
             const startIdx = w * 7;
             const weekLength = Math.min(7, period - startIdx);
             const isCompleted = isWeekCompleted(habit, startIdx, weekLength);
@@ -300,9 +306,7 @@ function renderHabits() {
             }
 
             // По умолчанию сворачиваем только выполненные недели
-            if (isCompleted) {
-                daysDiv.style.display = 'none';
-            }
+            if (isCompleted) daysDiv.style.display = 'none';
 
             // Клик по заголовку — сворачивание/разворачивание
             header.addEventListener('click', (e) => {
@@ -314,6 +318,19 @@ function renderHabits() {
             weekDiv.appendChild(header);
             weekDiv.appendChild(daysDiv);
             weeksContainer.appendChild(weekDiv);
+        }
+
+        // Кнопка «Показать / Скрыть историю»
+        if (numWeeks > 3) {
+            const historyBtn = document.createElement('button');
+            historyBtn.className = 'history-btn';
+            historyBtn.textContent = showAll ? 'Скрыть историю' : 'Показать историю';
+            historyBtn.addEventListener('click', () => {
+                habit.showAllWeeks = !habit.showAllWeeks;
+                saveHabits(habits);
+                renderHabits();
+            });
+            weeksContainer.appendChild(historyBtn);
         }
 
         card.appendChild(weeksContainer);
@@ -451,7 +468,8 @@ function setupEventListeners() {
             activeDays: activeDays,
             trackingDays: trackingDays,
             completions: Array(trackingDays).fill(false),
-            goal: trackingDays
+            goal: trackingDays,
+            showAllWeeks: false
         };
 
         habits.unshift(newHabit);
