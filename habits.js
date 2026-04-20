@@ -440,6 +440,7 @@ function setupEventListeners() {
     addHabitBtn.addEventListener('click', () => {
         habitForm.style.display = 'block';
         addHabitBtn.style.display = 'none';
+        habitNameInput.value = '';
         setupDaysButtons();
         habitGoalInput.value = '21';
         customDaysBlock.style.display = 'none';

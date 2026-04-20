@@ -1,5 +1,5 @@
 /* ====================== ОБЩИЕ СТИЛИ СТРАНИЦЫ ====================== */
-.main.habits {
+.habits {
     padding: 86px calc(50% - 555px) 120px;
     min-height: 100vh;
     display: flex;

@@ -1,10 +1,8 @@
 .tasks {
     padding: 86px calc(50% - 555px) 139px;
-    margin-bottom: 4px;
-    position: relative;
     display: flex;
     flex-direction: column;
-    background-color: transparent;
+    margin-bottom: 4px;
 }
 
 .tasks-title {
