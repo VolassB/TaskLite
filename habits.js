@@ -106,6 +106,18 @@ function calculateStreak(habit) {
     return streak;
 }
 
+function isWeekCompleted(habit, startIdx, weekLength) {
+    const completions = habit.completions || [];
+    for (let i = 0; i < weekLength; i++) {
+        const idx = startIdx + i;
+        if (idx >= completions.length) break;
+        const dayOfWeek = idx % 7;
+        const isActive = isDayActive(habit, dayOfWeek);
+        if (isActive && !completions[idx]) return false;
+    }
+    return true;
+}
+
 // ====================== НОРМАЛИЗАЦИЯ ======================
 function normalizeHabit(habit) {
     const normalized = { ...habit };
@@ -206,7 +218,7 @@ function renderHabits() {
 
     emptyState.style.display = 'none';
 
-    habits.forEach((habit, habitIndex) => {
+    habits.forEach((habit) => {
         const period = habit.trackingDays || 21;
 
         if (!habit.completions || habit.completions.length !== period) {
@@ -219,6 +231,7 @@ function renderHabits() {
         card.className = 'habit-card';
         card.dataset.id = habit.id;
 
+        // Заголовок карточки
         card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-info">
@@ -235,33 +248,75 @@ function renderHabits() {
             </div>
         `;
 
-        const tracker = document.createElement('div');
-        tracker.className = 'habit-tracker';
+        // === НОВЫЙ НЕДЕЛЬНЫЙ ТРЕКЕР ===
+        const weeksContainer = document.createElement('div');
+        weeksContainer.className = 'weeks-container';
 
-        for (let i = 0; i < period; i++) {
-            const dayOfWeek = i % 7;
-            const isCompleted = habit.completions[i];
-            const isActive = isDayActive(habit, dayOfWeek);
+        const numWeeks = Math.ceil(period / 7);
 
-            const btn = document.createElement('button');
-            btn.className = `day-btn ${isCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
-            btn.textContent = dayLabels[dayOfWeek];
-            btn.dataset.index = i;
+        for (let w = 0; w < numWeeks; w++) {
+            const startIdx = w * 7;
+            const weekLength = Math.min(7, period - startIdx);
+            const isCompleted = isWeekCompleted(habit, startIdx, weekLength);
 
-            if (!isActive) btn.disabled = true;
+            const weekDiv = document.createElement('div');
+            weekDiv.className = `week ${isCompleted ? 'week--completed' : ''}`;
 
-            // === КЛИК ПО ДНЮ ===
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                habit.completions[i] = !habit.completions[i];
-                saveHabits(habits);
-                renderHabits();
+            // Заголовок недели
+            const header = document.createElement('div');
+            header.className = 'week-header';
+            header.innerHTML = `
+                <div class="week-title">
+                    Неделя ${w + 1}
+                    ${isCompleted ? `<span class="check">✓</span>` : ''}
+                </div>
+            `;
+
+            // Дни недели
+            const daysDiv = document.createElement('div');
+            daysDiv.className = 'week-days';
+
+            for (let d = 0; d < weekLength; d++) {
+                const dayIdx = startIdx + d;
+                const dayOfWeek = dayIdx % 7;
+                const isDayCompleted = habit.completions[dayIdx];
+                const isActive = isDayActive(habit, dayOfWeek);
+
+                const btn = document.createElement('button');
+                btn.className = `day-btn ${isDayCompleted ? 'done' : ''} ${!isActive ? 'day--off' : ''}`;
+                btn.textContent = dayLabels[dayOfWeek];
+                btn.dataset.index = dayIdx;
+
+                if (!isActive) btn.disabled = true;
+
+                btn.addEventListener('click', () => {
+                    if (btn.disabled) return;
+                    habit.completions[dayIdx] = !habit.completions[dayIdx];
+                    saveHabits(habits);
+                    renderHabits();
+                });
+
+                daysDiv.appendChild(btn);
+            }
+
+            // По умолчанию сворачиваем только выполненные недели
+            if (isCompleted) {
+                daysDiv.style.display = 'none';
+            }
+
+            // Клик по заголовку — сворачивание/разворачивание
+            header.addEventListener('click', (e) => {
+                // игнорируем клик по кнопке удаления (если она внутри)
+                if (e.target.classList.contains('habit-delete')) return;
+                daysDiv.style.display = daysDiv.style.display === 'none' ? 'flex' : 'none';
             });
 
-            tracker.appendChild(btn);
+            weekDiv.appendChild(header);
+            weekDiv.appendChild(daysDiv);
+            weeksContainer.appendChild(weekDiv);
         }
 
-        card.appendChild(tracker);
+        card.appendChild(weeksContainer);
         habitsList.appendChild(card);
     });
 }
@@ -322,6 +377,7 @@ function setupColorOptions() {
         colorOptions.appendChild(row);
     });
 }
+
 // ====================== НАСТРОЙКА ДНЕЙ ======================
 // ====================== СОЗДАНИЕ КНОПОК ДНЕЙ ======================
 function setupDaysButtons() {

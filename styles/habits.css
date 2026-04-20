@@ -111,6 +111,74 @@
     transform: scale(1.1);
 }
 
+/* ==================== НЕДЕЛЬНЫЙ ТРЕКЕР ==================== */
+.weeks-container {
+    margin-top: 16px;
+    flex-direction: column;
+}
+
+.week {
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    flex-direction: column;
+}
+
+.week--completed {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.week-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+    background: #fff;
+}
+
+.week--completed .week-header {
+    background: #f0fdf4;
+}
+
+.week-header:hover {
+    background: #f8fafc;
+}
+
+.week-header .week-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.check {
+    color: #10b981;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.week-days {
+    display: flex;
+    gap: 6px;
+    padding: 14px 18px;
+    background: #fff;
+    /* flex-wrap: wrap; */
+    flex-direction: row;
+
+}
+
+.week--completed .week-days {
+    display: none;
+}
+
 /* Трекер — 3 недели по 7 дней */
 .habit-tracker {
     display: grid;
