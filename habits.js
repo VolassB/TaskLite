@@ -58,19 +58,23 @@ function escapeHtml(str) {
 
 // ====================== ЛОГИКА РАСПИСАНИЯ ======================
 function isDayActive(habit, dayIndex) {
-    const schedule = habit.schedule || 'daily';
+    const schedule = habit.schedule || 'everyday';
     if (schedule === 'daily') return true;
     if (schedule === 'weekdays') return dayIndex <= 4;
-    if (schedule === 'custom') return Array.isArray(habit.activeDays) && habit.activeDays.includes(dayIndex);
-    return true;
+    if (schedule === 'custom') {
+        return Array.isArray(habit.activeDays) && habit.activeDays.includes(dayIndex);
+    }
+        return true;
 }
 
 function getPlannedDaysPerWeek(habit) {
-    const schedule = habit.schedule || 'daily';
+    const schedule = habit.schedule || 'everyday';
     if (schedule === 'daily') return 7;
     if (schedule === 'weekdays') return 5;
-    if (schedule === 'custom') return Array.isArray(habit.activeDays) ? habit.activeDays.length : 0;
-    return 7;
+    if (schedule === 'custom') {
+        return Array.isArray(habit.activeDays) ? habit.activeDays.length : 0;
+    }
+        return 7;
 }
 
 function getMaxGoal(habit) {
@@ -441,6 +445,8 @@ function setupEventListeners() {
         addHabitBtn.style.display = 'none';
         setupDaysButtons();
         habitGoalInput.value = '21';
+        customDaysBlock.style.display = 'none';   // ← добавь эту строку
+        habitFrequencySelect.value = 'everyday';
     });
 
     // Закрытие формы
@@ -462,7 +468,7 @@ function setupEventListeners() {
     daysList.addEventListener('click', (e) => {
         const btn = e.target.closest('.day-btn');
         if (btn) {
-            btn.classList.toggle('active');
+            btn.classList.toggle('done');
         }
     });
 
